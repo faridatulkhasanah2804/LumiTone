@@ -1,0 +1,61 @@
+/* ==========================================================================
+   variables.css
+   Design tokens shared across the whole dashboard. Values are copied
+   1:1 from the LumiTone landing page so both experiences feel like the
+   same product.
+   ========================================================================== */
+
+:root {
+    /* Colors — flat cream & matcha palette (no gradients) */
+    --color-cream: #F6F1E5;
+    --color-cream-soft: #EDE6D3;
+    --color-matcha: #7C9473;
+    --color-matcha-dark: #64775E;
+    --color-matcha-light: #9DAF8F;
+
+    --color-bg: var(--color-cream);
+    --color-surface: #FFFFFF;
+    --color-primary: var(--color-matcha);
+    --color-primary-dark: var(--color-matcha-dark);
+    --color-secondary: var(--color-matcha-light);
+    --color-accent: var(--color-cream-soft);
+    --color-text: #26301F;
+    --color-text-soft: rgba(38, 48, 31, 0.62);
+    --color-text-faint: rgba(38, 48, 31, 0.45);
+    --color-border: #E6DFCB;
+
+    /* Status colors */
+    --color-success: #6F8E52;
+    --color-success-bg: #EAF1E1;
+    --color-warning: #C08A2E;
+    --color-warning-bg: #FBF1DD;
+    --color-danger: #B8583F;
+    --color-danger-bg: #FAEAE5;
+
+    /* Typography */
+    --font-sans: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-serif: 'Fraunces', Georgia, serif;
+
+    /* Radius */
+    --radius-sm: 0.85rem;
+    --radius-md: 1.25rem;
+    --radius-lg: 1.75rem;
+    --radius-xl: 2.25rem;
+    --radius-full: 999px;
+
+    /* Shadows */
+    --shadow-xs: 0 4px 14px -6px rgba(27, 42, 22, 0.08);
+    --shadow-sm: 0 10px 28px -12px rgba(27, 42, 22, 0.12);
+    --shadow-md: 0 20px 45px -20px rgba(27, 42, 22, 0.16);
+    --shadow-lg: 0 24px 55px -25px rgba(124, 148, 115, 0.3);
+    --shadow-glow: 0 10px 26px -12px rgba(124, 148, 115, 0.3);
+
+    /* Layout */
+    --sidebar-width: 264px;
+    --sidebar-width-min: 200px;
+    --sidebar-width-max: 380px;
+    --sidebar-width-collapsed: 76px;
+    --topbar-height: auto;
+    --transition-base: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}

@@ -1,0 +1,173 @@
+/* ==========================================================================
+   dashboard.css
+   Page-specific composition for dashboard.php: welcome hero, stat cards,
+   quick actions, recent analysis table, recommended products, daily tip,
+   and the activity timeline.
+   ========================================================================== */
+
+/* ---- Scroll reveal (progressive enhancement, JS adds .is-visible) ---- */
+.reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.reveal.is-visible { opacity: 1; transform: translateY(0); }
+
+/* ---- Welcome hero card ---- */
+.welcome-card {
+    position: relative;
+    border-radius: var(--radius-xl);
+    padding: clamp(1.75rem, 4vw, 2.75rem);
+    background: var(--color-primary);
+    color: #fff;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.welcome-card-content { max-width: 480px; }
+.welcome-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    background: rgba(255, 255, 255, 0.18);
+    padding: 0.35rem 0.85rem;
+    border-radius: var(--radius-full);
+    margin-bottom: 0.9rem;
+}
+.welcome-card h2 {
+    font-size: clamp(1.5rem, 2.4vw, 1.9rem);
+    margin: 0 0 0.6rem;
+    font-weight: 700;
+}
+.welcome-card p { margin: 0 0 1.5rem; font-size: 0.95rem; line-height: 1.6; opacity: 0.92; max-width: 40ch; }
+.welcome-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+
+.welcome-visual {
+    width: 150px;
+    height: 150px;
+    border-radius: var(--radius-xl);
+    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* ---- Stats row (compact chips inside the welcome card) ---- */
+.welcome-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 1.5rem;
+}
+.welcome-stat-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.6rem 0.9rem;
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+}
+.welcome-stat-chip-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: var(--radius-full);
+    background: rgba(255, 255, 255, 0.18);
+    flex-shrink: 0;
+}
+.welcome-stat-chip-value { font-size: 0.92rem; font-weight: 700; line-height: 1.2; }
+.welcome-stat-chip-label { font-size: 0.72rem; opacity: 0.85; line-height: 1.2; }
+
+/* ---- Stats grid (used on other pages / detail views) ---- */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+}
+
+.stat-card {
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 1.4rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
+}
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+    border-color: rgba(111, 142, 82, 0.3);
+}
+.stat-card-body { min-width: 0; }
+.stat-label { font-size: 0.78rem; color: var(--color-text-soft); margin: 0 0 0.3rem; }
+.stat-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0 0 0.3rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.stat-meta { font-size: 0.72rem; color: var(--color-text-faint); margin: 0; }
+
+/* ---- Recommended products ---- */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+}
+.product-card {
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+.product-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+
+.product-thumb {
+    height: 130px;
+    background: var(--color-accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.product-body { padding: 1.1rem 1.25rem 1.25rem; display: flex; flex-direction: column; gap: 0.5rem; flex: 1; }
+.product-tag { align-self: flex-start; }
+.product-name { font-size: 0.95rem; font-weight: 600; margin: 0; }
+.product-desc { font-size: 0.8rem; color: var(--color-text-soft); line-height: 1.5; margin: 0 0 0.5rem; flex: 1; }
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 1200px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .products-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 720px) {
+    .welcome-card { flex-direction: column; text-align: left; }
+    .welcome-visual { display: none; }
+}
+
+@media (max-width: 640px) {
+    .stats-grid, .products-grid { grid-template-columns: 1fr; }
+    .welcome-stats { gap: 0.5rem; }
+}
