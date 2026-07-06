@@ -22,7 +22,7 @@ $currentUser = [
 // (defined in each page) to highlight the active item.
 $menuItems = [
     ['key' => 'dashboard', 'label' => 'Dashboard',              'icon' => 'grid',       'href' => 'dashboard.php'],
-    ['key' => 'analysis',  'label' => 'AI Analysis',            'icon' => 'scan-face',  'href' => '#'],
+    ['key' => 'analysis',  'label' => 'AI Analysis',            'icon' => 'scan-face',  'href' => 'analysis.php'],
     ['key' => 'history',   'label' => 'Analysis History',       'icon' => 'history',    'href' => '#'],
     ['key' => 'products',  'label' => 'Product Recommendations','icon' => 'package',    'href' => '#'],
     ['key' => 'saved',     'label' => 'Saved Results',          'icon' => 'bookmark',   'href' => '#'],

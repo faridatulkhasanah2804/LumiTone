@@ -19,7 +19,7 @@ if (!isset($activePage)) {
 // Menu definition kept in one place so it's easy to extend later.
 $sidebarMenu = [
     'dashboard'  => ['label' => 'Dashboard',            'icon' => '🏠', 'href' => '../dashboard/index.php'],
-    'analysis'   => ['label' => 'Skin Analysis',        'icon' => '📷', 'href' => '../dashboard/skin-analysis.php'],
+    'analysis'   => ['label' => 'Skin Analysis',        'icon' => '📷', 'href' => '../analysis.php'],
     'history'    => ['label' => 'Analysis History',     'icon' => '📜', 'href' => '../dashboard/history.php'],
     'products'   => ['label' => 'Recommended Products', 'icon' => '💄', 'href' => '../dashboard/products.php'],
     'profile'    => ['label' => 'Profile',               'icon' => '👤', 'href' => '../dashboard/profile.php'],

@@ -29,7 +29,7 @@ require_once __DIR__ . '/includes/sidebar.php';
                 <h2>Welcome Back!</h2>
                 <p>Continue your skincare journey with AI-powered analysis. Lanjutkan pantau perkembangan kulitmu bersama LumiTone.</p>
                 <div class="welcome-actions">
-                    <a href="#" class="btn btn-white"><?= lt_icon('scan-face', '', 17) ?> Start New Analysis</a>
+                    <a href="analysis.php" class="btn btn-white"><?= lt_icon('scan-face', '', 17) ?> Start New Analysis</a>
                     <a href="#" class="btn btn-secondary" style="background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.4); color:#fff;">
                         <?= lt_icon('history', '', 17) ?> View History
                     </a>
