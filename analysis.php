@@ -16,9 +16,6 @@ require_once __DIR__ . '/includes/sidebar.php';
 ?>
 <main class="main-content">
 
-
-
-<link rel="stylesheet" href="assets/css/analysis.css">
 <?php
 /**
  * analysis.php
@@ -52,13 +49,14 @@ if (!function_exists('ai_icon')) {
             'droplet'    => '<path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/>',
             'activity'   => '<path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/>',
             'scan-face'  => '<path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/>',
+            'shirt'      => '<path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/>',
+            'ban'        => '<circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/>',
         ];
         $body = $paths[$name] ?? $paths['sparkles'];
         return '<svg xmlns="http://www.w3.org/2000/svg" width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="ai-icon">' . $body . '</svg>';
     }
 }
 ?>
-<link rel="stylesheet" href="assets/css/analysis.css">
 
 <div class="analysis-page">
 
@@ -172,6 +170,166 @@ if (!function_exists('ai_icon')) {
                     </div>
                 </div>
             </div>
+<!-- ============== COLOR ANALYSIS ============== -->
+            <div class="result-color-section">
+
+                <div class="color-section-head">
+                    <span class="color-season-badge"><?= ai_icon('sparkles', 13) ?> Soft Autumn &middot; Warm Palette</span>
+                    <h3>Warna yang Cocok Untukmu</h3>
+                    <p>Berdasarkan skin tone <strong>Warm, Medium</strong>, palet berikut paling menonjolkan kecerahan wajahmu.</p>
+                </div>
+
+                <div class="color-palette-grid">
+
+                    <div class="color-palette-card">
+                        <div class="palette-card-head">
+                            <span class="palette-icon-tile"><?= ai_icon('shirt', 16) ?></span>
+                            <span class="palette-label">Warna Pakaian</span>
+                        </div>
+                        <div class="palette-swatch-row">
+                            <div class="palette-swatch-item">
+                                <span class="palette-swatch" style="background:#C97C4C"></span>
+                                <span class="palette-name">Terracotta</span>
+                            </div>
+                            <div class="palette-swatch-item">
+                                <span class="palette-swatch" style="background:#A98B4E"></span>
+                                <span class="palette-name">Mustard</span>
+                            </div>
+                            <div class="palette-swatch-item">
+                                <span class="palette-swatch" style="background:#7C8A5A"></span>
+                                <span class="palette-name">Olive</span>
+                            </div>
+                            <div class="palette-swatch-item">
+                                <span class="palette-swatch" style="background:#8B5E3C"></span>
+                                <span class="palette-name">Camel</span>
+                            </div>
+                            <div class="palette-swatch-item">
+                                <span class="palette-swatch" style="background:#B5451B"></span>
+                                <span class="palette-name">Rust</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="color-palette-card">
+                        <div class="palette-card-head">
+                            <span class="palette-icon-tile"><?= ai_icon('droplet', 16) ?></span>
+                            <span class="palette-label">Warna Makeup</span>
+                        </div>
+                        <div class="palette-swatch-row">
+                            <div class="palette-swatch-item">
+                                <span class="palette-swatch" style="background:#C97A5D"></span>
+                                <span class="palette-name">Peach Coral</span>
+                            </div>
+                            <div class="palette-swatch-item">
+                                <span class="palette-swatch" style="background:#A85D45"></span>
+                                <span class="palette-name">Brick Red</span>
+                            </div>
+                            <div class="palette-swatch-item">
+                                <span class="palette-swatch" style="background:#D9A374"></span>
+                                <span class="palette-name">Warm Bronze</span>
+                            </div>
+                            <div class="palette-swatch-item">
+                                <span class="palette-swatch" style="background:#8C4A3A"></span>
+                                <span class="palette-name">Deep Brown</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="color-palette-card color-palette-card--avoid">
+                        <div class="palette-card-head">
+                            <span class="palette-icon-tile palette-icon-tile--avoid"><?= ai_icon('ban', 16) ?></span>
+                            <span class="palette-label">Sebaiknya Dihindari</span>
+                        </div>
+                        <div class="palette-swatch-row">
+                            <div class="palette-swatch-item">
+                                <span class="palette-swatch palette-swatch--avoid" style="background:#C6A9D9"></span>
+                                <span class="palette-name">Cool Lavender</span>
+                            </div>
+                            <div class="palette-swatch-item">
+                                <span class="palette-swatch palette-swatch--avoid" style="background:#7A8FA6"></span>
+                                <span class="palette-name">Icy Blue</span>
+                            </div>
+                            <div class="palette-swatch-item">
+                                <span class="palette-swatch palette-swatch--avoid" style="background:#E8E8E8"></span>
+                                <span class="palette-name">Pure White</span>
+                            </div>
+                            <div class="palette-swatch-item">
+                                <span class="palette-swatch palette-swatch--avoid" style="background:#3A3A5C"></span>
+                                <span class="palette-name">Cool Navy</span>
+                            </div>
+                        </div>
+                        <p class="palette-avoid-note">Warna dingin cenderung membuat wajahmu terlihat pucat &amp; kurang bercahaya.</p>
+                    </div>
+
+                </div>
+            </div>
+            <!-- ============== QUICK SWATCH CARDS ============== -->
+                <div class="swatch-cards-grid">
+
+                    <div class="swatch-card">
+                        <h4 class="swatch-card-title">Best Neutrals</h4>
+                        <div class="swatch-circle-row">
+                            <span class="swatch-circle" style="background:#E8C9A0"></span>
+                            <span class="swatch-circle" style="background:#D9A374"></span>
+                            <span class="swatch-circle" style="background:#8B5E3C"></span>
+                            <span class="swatch-circle" style="background:#4A3427"></span>
+                        </div>
+                    </div>
+
+                    <div class="swatch-card swatch-card--makeup">
+                        <h4 class="swatch-card-title">Best Make Up Colors</h4>
+                        <div class="swatch-makeup-groups">
+                            <div class="swatch-makeup-group">
+                                <span class="swatch-group-label">Blush</span>
+                                <div class="swatch-circle-row swatch-circle-row--sm">
+                                    <span class="swatch-circle swatch-circle--sm" style="background:#E39C9C"></span>
+                                    <span class="swatch-circle swatch-circle--sm" style="background:#D9727C"></span>
+                                    <span class="swatch-circle swatch-circle--sm" style="background:#C25368"></span>
+                                    <span class="swatch-circle swatch-circle--sm" style="background:#A83B52"></span>
+                                </div>
+                            </div>
+                            <div class="swatch-makeup-group">
+                                <span class="swatch-group-label">Lip</span>
+                                <div class="swatch-circle-row swatch-circle-row--sm">
+                                    <span class="swatch-circle swatch-circle--sm" style="background:#C2607A"></span>
+                                    <span class="swatch-circle swatch-circle--sm" style="background:#A8455C"></span>
+                                    <span class="swatch-circle swatch-circle--sm" style="background:#8C2E42"></span>
+                                    <span class="swatch-circle swatch-circle--sm" style="background:#6E1F30"></span>
+                                </div>
+                            </div>
+                            <div class="swatch-makeup-group">
+                                <span class="swatch-group-label">Eyeshadow</span>
+                                <div class="swatch-circle-row swatch-circle-row--sm">
+                                    <span class="swatch-circle swatch-circle--sm" style="background:#B8895A"></span>
+                                    <span class="swatch-circle swatch-circle--sm" style="background:#8C5E3C"></span>
+                                    <span class="swatch-circle swatch-circle--sm" style="background:#6E4128"></span>
+                                    <span class="swatch-circle swatch-circle--sm" style="background:#4A2A18"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="swatch-card">
+                        <h4 class="swatch-card-title">Best Accessory Colors</h4>
+                        <div class="swatch-circle-row">
+                            <span class="swatch-circle" style="background:#D9B45C"></span>
+                            <span class="swatch-circle" style="background:#B5451B"></span>
+                            <span class="swatch-circle" style="background:#8B5E3C"></span>
+                            <span class="swatch-circle" style="background:#7C8A5A"></span>
+                            <span class="swatch-circle" style="background:#2E4A4A"></span>
+                        </div>
+                    </div>
+
+                    <div class="swatch-card">
+                        <h4 class="swatch-card-title">Best Patterns</h4>
+                        <div class="swatch-circle-row">
+                            <span class="swatch-circle swatch-circle--pattern" style="background-color:#E8C9A0; background-image: radial-gradient(circle, #8B5E3C 15%, transparent 16%); background-size: 8px 8px;"></span>
+                            <span class="swatch-circle" style="background:#8B5E3C"></span>
+                            <span class="swatch-circle" style="background:#4A3427"></span>
+                        </div>
+                    </div>
+
+                </div>
         </section>
 
     </div>

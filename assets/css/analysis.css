@@ -321,3 +321,216 @@
     .result-actions { flex-direction: column; }
     .result-actions .btn { width: 100%; }
 }
+/* ---------- Color Analysis Section ---------- */
+.result-color-section {
+    margin-top: 24px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 32px 28px;
+}
+
+.color-section-head {
+    text-align: center;
+    max-width: 480px;
+    margin: 0 auto 28px;
+}
+
+.color-season-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #5B6B3E;
+    background: rgba(169, 189, 135, 0.16);
+    border: 1px solid rgba(169, 189, 135, 0.35);
+    padding: 6px 16px;
+    border-radius: var(--radius-full);
+    margin-bottom: 14px;
+}
+
+.color-section-head h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 8px;
+}
+
+.color-section-head p {
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--color-text-soft);
+}
+
+.color-section-head strong {
+    color: var(--color-text-soft);
+}
+
+.color-palette-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 18px;
+}
+
+.color-palette-card {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 20px;
+}
+
+.palette-card-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.palette-icon-tile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    background: rgba(169, 189, 135, 0.18);
+    color: #5B6B3E;
+    flex-shrink: 0;
+}
+
+.palette-icon-tile--avoid {
+    background: rgba(184, 92, 74, 0.14);
+    color: #A85D45;
+}
+
+.palette-label {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.palette-swatch-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.palette-swatch-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: 64px;
+}
+
+.palette-swatch {
+    display: block;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    box-shadow: 0 2px 6px rgba(27, 42, 22, 0.12);
+}
+
+.palette-swatch--avoid {
+    opacity: 0.85;
+}
+
+.palette-name {
+    font-size: 10.5px;
+    text-align: center;
+    line-height: 1.25;
+    color: var(--color-text-faint);
+}
+
+.color-palette-card--avoid {
+    background: #FBF7F5;
+}
+
+.palette-avoid-note {
+    margin-top: 16px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #8A6A5F;
+    font-style: italic;
+}
+
+@media (max-width: 640px) {
+    .result-color-section { padding: 24px 18px; }
+}
+/* ---------- Quick Swatch Cards ---------- */
+.swatch-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-top: 20px;
+}
+
+.swatch-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 16px 14px;
+    text-align: center;
+}
+
+.swatch-card-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0 0 12px;
+}
+
+.swatch-circle-row {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.swatch-circle {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(27, 42, 22, 0.12);
+    flex-shrink: 0;
+}
+
+.swatch-circle--sm {
+    width: 22px;
+    height: 22px;
+}
+
+.swatch-makeup-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.swatch-makeup-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.swatch-group-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--color-text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.swatch-circle-row--sm {
+    gap: 6px;
+}
+
+@media (max-width: 900px) {
+    .swatch-cards-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 480px) {
+    .swatch-cards-grid { grid-template-columns: 1fr; }
+    .swatch-card { padding: 14px; }
+}

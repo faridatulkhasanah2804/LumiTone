@@ -25,8 +25,8 @@
 :root {
     /* Colors */
     --color-bg: #FAF8F3;
-    --color-primary: #6F8E52;
-    --color-secondary: #AFC47A;
+    --color-primary: #A9BD87;
+    --color-secondary: #A9BD87;
     --color-accent: #DDE7B3;
     --color-text: #1B2A16;
     --color-border: #ECE7DD;
@@ -35,15 +35,15 @@
     --color-text-soft: #5B6B54;
     --color-text-muted: #8A9583;
 
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
-    --gradient-highlight: linear-gradient(135deg, #7C9B5B 0%, #B7CC8A 100%);
+    /* Gradients (kept as solid matcha, no gradation) */
+    --gradient-primary: #A9BD87;
+    --gradient-highlight: #A9BD87;
 
     /* Shadows */
     --shadow-sm: 0 2px 8px rgba(27, 42, 22, 0.05);
     --shadow-md: 0 8px 24px rgba(27, 42, 22, 0.08);
     --shadow-lg: 0 20px 48px rgba(27, 42, 22, 0.12);
-    --shadow-glow: 0 10px 40px rgba(111, 142, 82, 0.25);
+    --shadow-glow: 0 10px 40px rgba(169, 189, 135, 0.25);
 
     /* Radius */
     --radius-sm: 12px;
@@ -1135,14 +1135,14 @@ section {
     align-items: center;
     justify-content: center;
     background: rgba(255, 255, 255, 0.85);
-    color: var(--color-primary);
+    color: #A9BD87;
     border-radius: 50%;
     box-shadow: var(--shadow-sm);
     transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
 }
 
 .modal-close:hover {
-    background: var(--gradient-primary);
+    background: #A9BD87;
     color: var(--color-white);
     transform: rotate(90deg);
 }
@@ -1168,7 +1168,7 @@ section {
 .auth-colorpane {
     left: 0;
     transform: translateX(0%);
-    background: var(--gradient-primary);
+    background: #A9BD87;
     color: var(--color-white);
     display: flex;
     align-items: center;
@@ -1237,7 +1237,7 @@ section {
 
 .auth-switch-btn:hover {
     background: var(--color-white);
-    color: var(--color-primary);
+    color: #A9BD87;
     transform: translateY(-2px);
 }
 
@@ -1293,15 +1293,349 @@ section {
 .modal-field input:focus {
     outline: none;
     background: var(--color-white);
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 4px rgba(111, 142, 82, 0.14);
+    border-color: #A9BD87;
+    box-shadow: 0 0 0 4px rgba(169, 189, 135, 0.18);
 }
 
 .modal-forgot {
     align-self: flex-end;
     font-size: 13px;
     font-weight: 500;
-    color: var(--color-primary);
+    color: #A9BD87;
+    margin-top: -4px;
+    transition: opacity var(--transition-fast);
+}
+
+.modal-forgot:hover { opacity: 0.7; }
+
+.btn--block {
+    width: 100%;
+    margin-top: 8px;
+}
+
+@keyframes modal-panel-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+body.modal-open {
+    overflow: hidden;
+}
+
+/* Collapse to a single stacked column on small screens —
+   the sliding two-pane layout needs real width to read well */
+@media (max-width: 760px) {
+    .modal-box--split {
+        max-width: 420px;
+    }
+
+    .auth-shell {
+        flex-direction: column;
+        min-height: auto;
+        overflow: visible;
+    }
+
+    .auth-colorpane,
+    .auth-formpane {
+        position: relative;
+        width: 100%;
+        left: auto;
+        top: auto;
+        transform: none !important;
+        transition: none;
+    }
+
+    .auth-colorpane {
+        order: 2;
+        padding: 28px;
+    }
+
+    .auth-formpane {
+        order: 1;
+    }
+
+    .auth-formpane__inner {
+        padding: 40px 28px 32px;
+    }
+
+    .auth-colorpane__inner {
+        max-width: none;
+    }
+
+    .auth-colorpane__brand {
+        font-size: 20px;
+        margin-bottom: 14px;
+    }
+}
+
+/* ---------------------------------------------------------
+   16. Responsive
+--------------------------------------------------------- */
+@media (max-width: 1024px) {
+    .features__grid { grid-template-columns: repeat(2, 1fr); }
+    .testimonials__grid { grid-template-columns: 1fr; }
+    .footer__top { grid-template-columns: 1.4fr 1fr 1fr; }
+    .statistics__grid { grid-template-columns: repeat(2, 1fr); row-gap: 36px; }
+}
+
+@media (max-width: 860px) {
+    .navbar__nav,
+    .navbar__actions { display: none; }
+    .navbar__burger { display: flex; }
+    .navbar__mobile { position: fixed; top: var(--nav-height); left: 0; width: 100%; }
+
+    .timeline { flex-direction: column; align-items: stretch; gap: 32px; }
+    .timeline__connector { display: none; }
+    .timeline__step { max-width: 100%; }
+
+    section { padding: 84px 0; }
+    .container { padding: 0 22px; }
+}
+
+@media (max-width: 640px) {
+    .features__grid { grid-template-columns: 1fr; }
+    .footer__top { grid-template-columns: 1fr 1fr; }
+    .footer__brand { grid-column: 1 / -1; max-width: 100%; }
+    .statistics__grid { grid-template-columns: 1fr 1fr; padding: 40px 24px; }
+    .hero__badge {
+        padding: 18px 32px;
+        border-radius: 999px;
+        box-shadow: 0 20px 60px rgba(111, 142, 82, 0.18);
+    }
+    .trusted__logos { gap: 28px; }
+    .hero { min-height: auto; }
+}.modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(27, 42, 22, 0.28);
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s var(--ease), backdrop-filter 0.4s var(--ease),
+                -webkit-backdrop-filter 0.4s var(--ease), visibility 0s linear 0.4s;
+}
+
+.modal-overlay.is-open {
+    opacity: 1;
+    visibility: visible;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: opacity 0.4s var(--ease), backdrop-filter 0.4s var(--ease),
+                -webkit-backdrop-filter 0.4s var(--ease), visibility 0s linear 0s;
+}
+
+.modal-box {
+    position: relative;
+    width: 100%;
+    max-width: 430px;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 44px 38px 38px;
+    box-shadow: var(--shadow-lg);
+    transform: scale(0.9) translateY(24px);
+    opacity: 0;
+    transition: transform 0.45s var(--ease), opacity 0.4s var(--ease);
+}
+
+.modal-overlay.is-open .modal-box {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+}
+
+/* Split variant overrides the generic single-column box */
+.modal-box--split {
+    max-width: 880px;
+    padding: 0;
+    overflow: hidden;
+}
+
+.modal-close {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    z-index: 10;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.85);
+    color: #A9BD87;
+    border-radius: 50%;
+    box-shadow: var(--shadow-sm);
+    transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+}
+
+.modal-close:hover {
+    background: #A9BD87;
+    color: var(--color-white);
+    transform: rotate(90deg);
+}
+
+/* ---------- Sliding shell ---------- */
+.auth-shell {
+    position: relative;
+    display: flex;
+    width: 100%;
+    min-height: 560px;
+    overflow: hidden;
+}
+
+.auth-colorpane,
+.auth-formpane {
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    transition: transform 0.6s var(--ease);
+}
+
+.auth-colorpane {
+    left: 0;
+    transform: translateX(0%);
+    background: #A9BD87;
+    color: var(--color-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px;
+    z-index: 2;
+}
+
+.auth-formpane {
+    left: 50%;
+    transform: translateX(0%);
+    background: var(--color-white);
+    display: flex;
+    align-items: center;
+    z-index: 1;
+}
+
+/* Login mode: colorpane slides right, formpane slides left */
+.auth-shell[data-mode="login"] .auth-colorpane {
+    transform: translateX(100%);
+}
+.auth-shell[data-mode="login"] .auth-formpane {
+    transform: translateX(-100%);
+}
+
+.auth-colorpane__inner {
+    max-width: 260px;
+}
+
+.auth-colorpane__brand {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 28px;
+}
+
+.auth-colorpane__content {
+    display: none;
+}
+
+.auth-shell[data-mode="login"] .auth-colorpane__content[data-for="login"],
+.auth-shell[data-mode="register"] .auth-colorpane__content[data-for="register"] {
+    display: block;
+    animation: modal-panel-in 0.5s var(--ease);
+}
+
+.auth-colorpane__text {
+    font-size: 15px;
+    opacity: 0.92;
+    margin-bottom: 20px;
+}
+
+.auth-switch-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 32px;
+    border: 1.5px solid rgba(255, 255, 255, 0.8);
+    border-radius: var(--radius-full);
+    color: var(--color-white);
+    font-weight: 600;
+    font-size: 14px;
+    transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+}
+
+.auth-switch-btn:hover {
+    background: var(--color-white);
+    color: #A9BD87;
+    transform: translateY(-2px);
+}
+
+.auth-formpane__inner {
+    width: 100%;
+    padding: 56px 48px;
+}
+
+.auth-form {
+    display: none;
+}
+
+.auth-shell[data-mode="login"] .auth-form[data-for="login"],
+.auth-shell[data-mode="register"] .auth-form[data-for="register"] {
+    display: block;
+    animation: modal-panel-in 0.5s var(--ease);
+}
+
+.auth-form__title {
+    font-size: 26px;
+    margin: 14px 0 26px;
+}
+
+.modal-badge {
+    display: inline-block;
+    font-size: 20px;
+    line-height: 1;
+}
+
+.modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.modal-field input {
+    width: 100%;
+    font-family: var(--font-base);
+    font-size: 14px;
+    font-weight: 400;
+    padding: 14px 18px;
+    border: 1.5px solid transparent;
+    border-radius: var(--radius-sm);
+    background: #F4F1E9;
+    color: var(--color-text);
+    transition: border-color var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.modal-field input::placeholder {
+    color: var(--color-text-muted);
+}
+
+.modal-field input:focus {
+    outline: none;
+    background: var(--color-white);
+    border-color: #A9BD87;
+    box-shadow: 0 0 0 4px rgba(169, 189, 135, 0.18);
+}
+
+.modal-forgot {
+    align-self: flex-end;
+    font-size: 13px;
+    font-weight: 500;
+    color: #A9BD87;
     margin-top: -4px;
     transition: opacity var(--transition-fast);
 }

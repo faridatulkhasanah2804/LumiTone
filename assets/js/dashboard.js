@@ -116,6 +116,7 @@
     var collapseBtn = document.getElementById('sidebarCollapseToggle');
 
     if (sidebar && resizer) {
+        root.classList.remove('sidebar-ready');
         var STORAGE_WIDTH = 'lt_sidebar_width';
         var STORAGE_COLLAPSED = 'lt_sidebar_collapsed';
         var DEFAULT_WIDTH = 264;
@@ -160,6 +161,12 @@
 
             lastExpandedWidth = savedWidth || DEFAULT_WIDTH;
             setCollapsed(savedCollapsed);
+
+            requestAnimationFrame(function () {
+                requestAnimationFrame(function () {
+                    root.classList.add('sidebar-ready');
+                });
+            });
         })();
 
         // Drag to resize

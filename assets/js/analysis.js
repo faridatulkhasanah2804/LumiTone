@@ -39,9 +39,11 @@ document.addEventListener('DOMContentLoaded', function () {
         };
         reader.readAsDataURL(file);
     }
-
-    chooseFileBtn.addEventListener('click', () => fileInput.click());
-    dropzone.addEventListener('click', () => fileInput.click());
+chooseFileBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    fileInput.click();
+});
+dropzone.addEventListener('click', () => fileInput.click());
     fileInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
 
     ['dragenter', 'dragover'].forEach(evt =>

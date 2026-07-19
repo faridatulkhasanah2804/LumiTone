@@ -34,6 +34,9 @@ require_once __DIR__ . '/icons.php';
 <link rel="stylesheet" href="assets/css/layout.css">
 <link rel="stylesheet" href="assets/css/components.css">
 <link rel="stylesheet" href="assets/css/dashboard.css">
+<?php if (($activePage ?? '') === 'analysis'): ?>
+<link rel="stylesheet" href="assets/css/analysis.css">
+<?php endif; ?>
 </head>
 <body>
 

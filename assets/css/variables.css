@@ -15,6 +15,7 @@
 
     --color-bg: var(--color-cream);
     --color-surface: #FFFFFF;
+    --color-white: #FFFFFF;
     --color-primary: var(--color-matcha);
     --color-primary-dark: var(--color-matcha-dark);
     --color-secondary: var(--color-matcha-light);
@@ -22,6 +23,7 @@
     --color-text: #26301F;
     --color-text-soft: rgba(38, 48, 31, 0.62);
     --color-text-faint: rgba(38, 48, 31, 0.45);
+    --color-text-muted: rgba(38, 48, 31, 0.58);
     --color-border: #E6DFCB;
 
     /* Status colors */

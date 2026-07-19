@@ -12,9 +12,9 @@
 // Currently logged-in user (dummy session data)
 $currentUser = [
     'name'        => 'Farida',
-    'full_name'   => 'Farida Nur Aini',
+    'full_name'   => 'Faridatul Khasanah',
     'email'       => 'farida@lumitone.app',
-    'initials'    => 'FN',
+    'initials'    => 'FK',
     'plan'        => 'LumiTone Pro',
 ];
 
@@ -23,11 +23,11 @@ $currentUser = [
 $menuItems = [
     ['key' => 'dashboard', 'label' => 'Dashboard',              'icon' => 'grid',       'href' => 'dashboard.php'],
     ['key' => 'analysis',  'label' => 'AI Analysis',            'icon' => 'scan-face',  'href' => 'analysis.php'],
-    ['key' => 'history',   'label' => 'Analysis History',       'icon' => 'history',    'href' => '#'],
-    ['key' => 'products',  'label' => 'Product Recommendations','icon' => 'package',    'href' => '#'],
-    ['key' => 'saved',     'label' => 'Saved Results',          'icon' => 'bookmark',   'href' => '#'],
-    ['key' => 'profile',   'label' => 'Profile',                'icon' => 'user',       'href' => '#'],
-    ['key' => 'settings',  'label' => 'Settings',                'icon' => 'settings',   'href' => '#'],
+    ['key' => 'history',   'label' => 'Analysis History',       'icon' => 'history',    'href' => 'history.php'],
+    ['key' => 'products',  'label' => 'Product Recommendations','icon' => 'package',    'href' => 'products.php'],
+    ['key' => 'saved',     'label' => 'Saved Results',          'icon' => 'bookmark',   'href' => 'saved.php'],
+    ['key' => 'profile',   'label' => 'Profile',                'icon' => 'user',       'href' => 'profile.php'],
+    ['key' => 'settings',  'label' => 'Settings',                'icon' => 'settings',   'href' => 'settings.php'],
 ];
 
 // Statistic summary cards
@@ -89,7 +89,7 @@ $quickActions = [
 // Recent analysis table rows
 $recentAnalyses = [
     [
-        'initials'  => 'FN',
+        'initials'  => 'FK',
         'date'      => '2 Jan 2024, 14:30',
         'skintone'  => 'Light - Medium',
         'swatch'    => '#E7B98F',
@@ -97,7 +97,7 @@ $recentAnalyses = [
         'status'    => 'Selesai',
     ],
     [
-        'initials'  => 'FN',
+        'initials'  => 'FK ',
         'date'      => '18 Des 2023, 10:15',
         'skintone'  => 'Light - Medium',
         'swatch'    => '#E7B98F',
@@ -166,5 +166,27 @@ $activities = [
         'icon'  => 'sparkles',
         'title' => 'Rekomendasi produk baru dibuat',
         'time'  => 'Baru saja',
+    ],
+];
+
+$settings = [
+    'appearance' => [
+        'theme'    => 'Light Mode',
+        'accent'   => 'Blue',
+        'fontSize' => 'Medium',
+    ],
+    'notification' => [
+        'email'     => true,
+        'analysis'  => true,
+        'product'   => true,
+        'promotion' => false,
+    ],
+    'privacy' => [
+        'profile'      => 'Private',
+        'dataSharing'  => false,
+        'twoFactor'    => true,
+    ],
+    'language' => [
+        'current' => 'English',
     ],
 ];

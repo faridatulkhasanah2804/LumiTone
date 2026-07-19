@@ -20,7 +20,7 @@ if (!isset($activePage)) {
 $sidebarMenu = [
     'dashboard'  => ['label' => 'Dashboard',            'icon' => '🏠', 'href' => '../dashboard/index.php'],
     'analysis'   => ['label' => 'Skin Analysis',        'icon' => '📷', 'href' => '../analysis.php'],
-    'history'    => ['label' => 'Analysis History',     'icon' => '📜', 'href' => '../dashboard/history.php'],
+    'history'    => ['label' => 'Analysis History',     'icon' => '📜', 'href' => '../history.php'],
     'products'   => ['label' => 'Recommended Products', 'icon' => '💄', 'href' => '../dashboard/products.php'],
     'profile'    => ['label' => 'Profile',               'icon' => '👤', 'href' => '../dashboard/profile.php'],
     'settings'   => ['label' => 'Settings',              'icon' => '⚙️', 'href' => '../dashboard/settings.php'],

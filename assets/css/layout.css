@@ -30,6 +30,11 @@ img { max-width: 100%; display: block; }
 }
 
 /* ---- Sidebar ---- */
+html:not(.sidebar-ready) .sidebar,
+html:not(.sidebar-ready) .main-content {
+    transition: none !important;
+}
+
 .sidebar {
     position: fixed;
     inset: 0 auto 0 0;
