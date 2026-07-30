@@ -47,7 +47,7 @@
 
     <!-- Logout -->
     <div class="sidebar-footer">
-        <a href="#" class="nav-link nav-link-logout">
+        <a href="logout.php" class="nav-link nav-link-logout">
             <span class="nav-icon"><?= lt_icon('log-out', '', 19) ?></span>
             <span class="nav-label">Logout</span>
         </a>

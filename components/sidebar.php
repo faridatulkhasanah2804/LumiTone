@@ -24,6 +24,7 @@ $sidebarMenu = [
     'products'   => ['label' => 'Recommended Products', 'icon' => '💄', 'href' => '../dashboard/products.php'],
     'profile'    => ['label' => 'Profile',               'icon' => '👤', 'href' => '../dashboard/profile.php'],
     'settings'   => ['label' => 'Settings',              'icon' => '⚙️', 'href' => '../dashboard/settings.php'],
+   
 ];
 ?>
 <aside class="sidebar" id="sidebar">
@@ -55,7 +56,7 @@ $sidebarMenu = [
 
     <!-- Logout -->
     <div class="sidebar__footer">
-        <a href="../auth/logout.php" class="sidebar__logout">
+        <a href="../logout.php" class="sidebar__logout">
             <span class="sidebar__item-icon">🚪</span>
             <span class="sidebar__label">Logout</span>
         </a>

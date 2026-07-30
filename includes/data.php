@@ -2,21 +2,18 @@
 /**
  * data.php
  * ------------------------------------------------------------------
- * Centralized dummy data for the LumiTone Dashboard.
- * In a real backend, these arrays would be replaced with data fetched
- * from a database (MySQL via PDO/MySQLi). Keeping them here means the
- * view files (dashboard.php) stay clean and only loop over data.
+ * Shared data available on every dashboard page (loaded via
+ * header.php). $currentUser now comes from the `users` table for
+ * the logged-in session. $stats / $recentAnalyses / $products used
+ * to live here as dummy arrays — they're page-specific, so they now
+ * live in dashboard.php as real queries instead.
+ *
+ * $quickActions / $dailyTip / $activities / $settings are left as
+ * static/dummy for now since they aren't backed by a table in the
+ * current schema and weren't part of the pages reviewed for this
+ * refactor.
  * ------------------------------------------------------------------
  */
-
-// Currently logged-in user (dummy session data)
-$currentUser = [
-    'name'        => 'Farida',
-    'full_name'   => 'Faridatul Khasanah',
-    'email'       => 'farida@lumitone.app',
-    'initials'    => 'FK',
-    'plan'        => 'LumiTone Pro',
-];
 
 // Sidebar navigation menu. `key` is matched against $activePage
 // (defined in each page) to highlight the active item.
@@ -30,35 +27,41 @@ $menuItems = [
     ['key' => 'settings',  'label' => 'Settings',                'icon' => 'settings',   'href' => 'settings.php'],
 ];
 
-// Statistic summary cards
-$stats = [
-    [
-        'icon'  => 'scan-face',
-        'label' => 'Total Analyses',
-        'value' => '24',
-        'meta'  => '+3 bulan ini',
-    ],
-    [
-        'icon'  => 'palette',
-        'label' => 'Detected Skin Tone',
-        'value' => 'Soft Autumn (Warm)',
-        'meta'  => 'Hasil terakhir',
-    ],
-    [
-        'icon'  => 'package',
-        'label' => 'Recommended Products',
-        'value' => '12',
-        'meta'  => 'Produk untukmu',
-    ],
-    [
-        'icon'  => 'calendar',
-        'label' => 'Last Analysis',
-        'value' => '2 Jan 2024',
-        'meta'  => '3 hari yang lalu',
-    ],
+// Currently logged-in user — loaded from `users` via $_SESSION['user_id'].
+$currentUser = [
+    'name'      => 'Guest',
+    'full_name' => 'Guest',
+    'email'     => '',
+    'initials'  => 'GU',
+    'plan'      => 'LumiTone',
+    'photo'     => null,
 ];
 
-// Quick action shortcut cards
+if (isset($_SESSION['user_id'])) {
+    $stmt = mysqli_prepare($conn, 'SELECT fullname, email, photo FROM users WHERE id = ? LIMIT 1');
+    mysqli_stmt_bind_param($stmt, 'i', $_SESSION['user_id']);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $user   = mysqli_fetch_assoc($result);
+    mysqli_stmt_close($stmt);
+
+    if ($user) {
+        $fullName = $user['fullname'] ?: 'User';
+        $words    = preg_split('/\s+/', trim($fullName));
+        $initials = strtoupper(substr($words[0], 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ''));
+
+        $currentUser = [
+            'name'      => $words[0],
+            'full_name' => $fullName,
+            'email'     => $user['email'] ?? '',
+            'initials'  => $initials,
+            'plan'      => 'LumiTone Pro',
+            'photo'     => $user['photo'],
+        ];
+    }
+}
+
+// Quick action shortcut cards (static — not tied to a DB table yet)
 $quickActions = [
     [
         'icon'  => 'upload-cloud',
@@ -86,71 +89,13 @@ $quickActions = [
     ],
 ];
 
-// Recent analysis table rows
-$recentAnalyses = [
-    [
-        'initials'  => 'FK',
-        'date'      => '2 Jan 2024, 14:30',
-        'skintone'  => 'Light - Medium',
-        'swatch'    => '#E7B98F',
-        'undertone' => 'Warm (Kuning/Emas)',
-        'status'    => 'Selesai',
-    ],
-    [
-        'initials'  => 'FK ',
-        'date'      => '18 Des 2023, 10:15',
-        'skintone'  => 'Light - Medium',
-        'swatch'    => '#E7B98F',
-        'undertone' => 'Warm (Kuning/Emas)',
-        'status'    => 'Selesai',
-    ],
-    [
-        'initials'  => 'FN',
-        'date'      => '5 Des 2023, 16:45',
-        'skintone'  => 'Medium',
-        'swatch'    => '#C99169',
-        'undertone' => 'Neutral',
-        'status'    => 'Selesai',
-    ],
-    [
-        'initials'  => 'FN',
-        'date'      => '29 Nov 2023, 09:05',
-        'skintone'  => 'Medium',
-        'swatch'    => '#C99169',
-        'undertone' => 'Neutral',
-        'status'    => 'Diproses',
-    ],
-];
-
-// Recommended product cards
-$products = [
-    [
-        'icon'  => 'droplet',
-        'name'  => 'Gentle Foaming Cleanser',
-        'tag'   => 'Cleanser',
-        'desc'  => 'Membersihkan wajah tanpa membuat kulit terasa kering atau tertarik.',
-    ],
-    [
-        'icon'  => 'sparkles',
-        'name'  => 'Vitamin C Brightening Serum',
-        'tag'   => 'Serum',
-        'desc'  => 'Mencerahkan warna kulit dan menyamarkan bekas jerawat secara bertahap.',
-    ],
-    [
-        'icon'  => 'shield-check',
-        'name'  => 'Daily Matte Sunscreen SPF 50+',
-        'tag'   => 'Sunscreen',
-        'desc'  => 'Melindungi kulit dari sinar UV tanpa meninggalkan white cast.',
-    ],
-];
-
-// Daily skincare tip
+// Daily skincare tip (static — no `tips` table in the current schema)
 $dailyTip = [
     'title' => 'Jangan Lewatkan Sunscreen di Pagi Hari',
     'body'  => 'Meski di dalam ruangan, sinar UV tetap bisa menembus jendela dan mempercepat penuaan kulit. Gunakan sunscreen minimal SPF 30 setiap pagi, dan aplikasikan ulang setiap 3-4 jam jika beraktivitas di luar ruangan.',
 ];
 
-// Recent activity timeline
+// Recent activity timeline (static — no `activity_log` table in the current schema)
 $activities = [
     [
         'icon'  => 'upload-cloud',
@@ -169,6 +114,7 @@ $activities = [
     ],
 ];
 
+// Settings page defaults (static — no `settings` table in the current schema)
 $settings = [
     'appearance' => [
         'theme'    => 'Light Mode',

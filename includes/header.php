@@ -14,6 +14,8 @@
 if (!isset($pageTitle))  $pageTitle  = 'Dashboard';
 if (!isset($activePage)) $activePage = 'dashboard';
 
+require_once __DIR__ . '/../components/config/db.php';
+require_once __DIR__ . '/helpers.php';
 require_once __DIR__ . '/data.php';
 require_once __DIR__ . '/icons.php';
 ?>

@@ -40,12 +40,12 @@
                         <span class="modal-badge"></span>
                         <h2 class="auth-form__title" id="authFormTitle">Selamat Datang Kembali</h2>
 
-                        <form class="modal-form" onsubmit="return false;">
+                        <form class="modal-form" action="login.php" method="POST">
                             <label class="modal-field">
-                                <input type="email" placeholder="Email" required>
+                                <input type="email" name="email" placeholder="Email" required>
                             </label>
                             <label class="modal-field">
-                                <input type="password" placeholder="Kata Sandi" required>
+                                <input type="password" name="password" placeholder="Kata Sandi" required>
                             </label>
                             <a href="#" class="modal-forgot">Lupa kata sandi?</a>
                             <button type="submit" class="btn btn--primary btn--block ripple">Masuk</button>
@@ -57,18 +57,18 @@
                         <span class="modal-badge"></span>
                         <h2 class="auth-form__title">Buat Akun Baru</h2>
 
-                        <form class="modal-form" onsubmit="return false;">
+                        <form class="modal-form" action="register.php" method="POST">
                             <label class="modal-field">
-                                <input type="text" placeholder="Nama Lengkap" required>
+                                <input type="text" name="fullname" placeholder="Nama Lengkap" required>
                             </label>
                             <label class="modal-field">
-                                <input type="email" placeholder="Email" required>
+                                <input type="email" name="email" placeholder="Email" required>
                             </label>
                             <label class="modal-field">
-                                <input type="password" placeholder="Kata Sandi" required>
+                                <input type="password" name="password" placeholder="Kata Sandi" required>
                             </label>
                             <label class="modal-field">
-                                <input type="password" placeholder="Konfirmasi Password" required>
+                                <input type="password" name="confirm_password" placeholder="Konfirmasi Password" required>
                             </label>
                             <button type="submit" class="btn btn--primary btn--block ripple">Daftar Gratis</button>
                         </form>

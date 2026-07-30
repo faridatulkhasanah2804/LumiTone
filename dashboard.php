@@ -1,10 +1,19 @@
 <?php
+session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: index.php");
+    exit();
+}
+
+
 /**
  * dashboard.php
  * ------------------------------------------------------------------
  * Main dashboard ("Beranda") page shown after a user logs in.
- * All data comes from includes/data.php (dummy for now, ready to be
- * swapped for real database queries later).
+ * $stats / $recentAnalyses / $products below are now real queries
+ * against the `analysis`, `products`, and `analysis_products` tables
+ * (see migration_lumitone.sql), scoped to the logged-in user.
  * ------------------------------------------------------------------
  */
 
@@ -13,6 +22,113 @@ $activePage = 'dashboard';
 
 require_once __DIR__ . '/includes/header.php';
 require_once __DIR__ . '/includes/sidebar.php';
+
+$userId = (int) $_SESSION['user_id'];
+
+/* ---------------------------------------------------------------
+ * Total analyses for this user
+ * --------------------------------------------------------------- */
+$stmt = mysqli_prepare($conn, 'SELECT COUNT(*) AS total FROM analysis WHERE user_id = ?');
+mysqli_stmt_bind_param($stmt, 'i', $userId);
+mysqli_stmt_execute($stmt);
+$totalAnalyses = (int) mysqli_fetch_assoc(mysqli_stmt_get_result($stmt))['total'];
+mysqli_stmt_close($stmt);
+
+/* ---------------------------------------------------------------
+ * Latest analysis (drives "Detected Skin Tone" & "Last Analysis")
+ * --------------------------------------------------------------- */
+$stmt = mysqli_prepare($conn, 'SELECT id, season, undertone, skin_tone, created_at
+    FROM analysis WHERE user_id = ? ORDER BY created_at DESC LIMIT 1');
+mysqli_stmt_bind_param($stmt, 'i', $userId);
+mysqli_stmt_execute($stmt);
+$latestAnalysis = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+mysqli_stmt_close($stmt);
+
+/* ---------------------------------------------------------------
+ * Distinct products recommended across all of this user's analyses
+ * --------------------------------------------------------------- */
+$stmt = mysqli_prepare($conn, 'SELECT COUNT(DISTINCT ap.product_id) AS total
+    FROM analysis_products ap
+    INNER JOIN analysis a ON a.id = ap.analysis_id
+    WHERE a.user_id = ?');
+mysqli_stmt_bind_param($stmt, 'i', $userId);
+mysqli_stmt_execute($stmt);
+$totalProductsRecommended = (int) mysqli_fetch_assoc(mysqli_stmt_get_result($stmt))['total'];
+mysqli_stmt_close($stmt);
+
+$stats = [
+    [
+        'icon'  => 'scan-face',
+        'label' => 'Total Analyses',
+        'value' => (string) $totalAnalyses,
+        'meta'  => 'Total analisis kamu',
+    ],
+    [
+        'icon'  => 'palette',
+        'label' => 'Detected Skin Tone',
+        'value' => $latestAnalysis['season'] ?? 'Belum ada data',
+        'meta'  => 'Hasil terakhir',
+    ],
+    [
+        'icon'  => 'package',
+        'label' => 'Recommended Products',
+        'value' => (string) $totalProductsRecommended,
+        'meta'  => 'Produk untukmu',
+    ],
+    [
+        'icon'  => 'calendar',
+        'label' => 'Last Analysis',
+        'value' => $latestAnalysis ? date('j M Y', strtotime($latestAnalysis['created_at'])) : '—',
+        'meta'  => $latestAnalysis ? lt_time_ago($latestAnalysis['created_at']) : 'Belum ada analisis',
+    ],
+];
+
+/* ---------------------------------------------------------------
+ * Recent analyses table (latest 4)
+ * --------------------------------------------------------------- */
+$recentAnalyses = [];
+$stmt = mysqli_prepare($conn, 'SELECT id, skin_tone, undertone, status, created_at
+    FROM analysis WHERE user_id = ? ORDER BY created_at DESC LIMIT 4');
+mysqli_stmt_bind_param($stmt, 'i', $userId);
+mysqli_stmt_execute($stmt);
+$rows = mysqli_stmt_get_result($stmt);
+while ($row = mysqli_fetch_assoc($rows)) {
+    $recentAnalyses[] = [
+        'id'        => $row['id'],
+        'initials'  => $currentUser['initials'],
+        'date'      => date('j M Y, H:i', strtotime($row['created_at'])),
+        'skintone'  => $row['skin_tone'] ?? '—',
+        'swatch'    => lt_skintone_to_hex($row['skin_tone']),
+        'undertone' => $row['undertone'] ?? '—',
+        'status'    => $row['status'] === 'completed' ? 'Selesai' : 'Diproses',
+    ];
+}
+mysqli_stmt_close($stmt);
+
+/* ---------------------------------------------------------------
+ * Recommended products (from the latest analysis, max 3 to match
+ * the original dashboard card grid)
+ * --------------------------------------------------------------- */
+$products = [];
+if ($latestAnalysis) {
+    $stmt = mysqli_prepare($conn, 'SELECT p.category, p.product_name, p.description
+        FROM analysis_products ap
+        INNER JOIN products p ON p.id = ap.product_id
+        WHERE ap.analysis_id = ?
+        LIMIT 3');
+    mysqli_stmt_bind_param($stmt, 'i', $latestAnalysis['id']);
+    mysqli_stmt_execute($stmt);
+    $rows = mysqli_stmt_get_result($stmt);
+    while ($row = mysqli_fetch_assoc($rows)) {
+        $products[] = [
+            'icon' => lt_category_to_icon($row['category']),
+            'name' => $row['product_name'],
+            'tag'  => $row['category'] ?? '—',
+            'desc' => $row['description'] ?? '',
+        ];
+    }
+    mysqli_stmt_close($stmt);
+}
 ?>
 <main class="main-content">
     <?php require __DIR__ . '/includes/topbar.php'; ?>
@@ -30,7 +146,7 @@ require_once __DIR__ . '/includes/sidebar.php';
                 <p>Continue your skincare journey with AI-powered analysis. Lanjutkan pantau perkembangan kulitmu bersama LumiTone.</p>
                 <div class="welcome-actions">
                     <a href="analysis.php" class="btn btn-white"><?= lt_icon('scan-face', '', 17) ?> Start New Analysis</a>
-                    <a href="#" class="btn btn-secondary" style="background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.4); color:#fff;">
+                    <a href="history.php" class="btn btn-secondary" style="background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.4); color:#fff;">
                         <?= lt_icon('history', '', 17) ?> View History
                     </a>
                 </div>
@@ -58,7 +174,7 @@ require_once __DIR__ . '/includes/sidebar.php';
                     <h2>Recent Analysis</h2>
                     <p>Ringkasan hasil analisis kulit terbarumu.</p>
                 </div>
-                <a href="#" class="section-link">Lihat Semua <?= lt_icon('chevron-right', '', 15) ?></a>
+                <a href="history.php" class="section-link">Lihat Semua <?= lt_icon('chevron-right', '', 15) ?></a>
             </div>
 
             <div class="table-wrap">
@@ -74,6 +190,9 @@ require_once __DIR__ . '/includes/sidebar.php';
                         </tr>
                     </thead>
                     <tbody>
+                        <?php if (empty($recentAnalyses)): ?>
+                            <tr><td colspan="6" class="cell-muted">Belum ada analisis. <a href="analysis.php">Mulai analisis pertamamu</a>.</td></tr>
+                        <?php endif; ?>
                         <?php foreach ($recentAnalyses as $row): ?>
                             <tr>
                                 <td>
@@ -97,7 +216,7 @@ require_once __DIR__ . '/includes/sidebar.php';
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <a href="#" class="btn btn-secondary btn-sm"><?= lt_icon('eye', '', 15) ?> Lihat Detail</a>
+                                    <a href="history.php" class="btn btn-secondary btn-sm"><?= lt_icon('eye', '', 15) ?> Lihat Detail</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -115,10 +234,13 @@ require_once __DIR__ . '/includes/sidebar.php';
                     <h2>Recommended Products</h2>
                     <p>Dipilih berdasarkan hasil analisis kulitmu.</p>
                 </div>
-                <a href="#" class="section-link">Lihat Semua <?= lt_icon('chevron-right', '', 15) ?></a>
+                <a href="products.php" class="section-link">Lihat Semua <?= lt_icon('chevron-right', '', 15) ?></a>
             </div>
 
             <div class="products-grid">
+                <?php if (empty($products)): ?>
+                    <p class="cell-muted">Belum ada rekomendasi produk. <a href="analysis.php">Mulai analisis</a> untuk mendapatkan rekomendasi.</p>
+                <?php endif; ?>
                 <?php foreach ($products as $product): ?>
                     <div class="product-card">
                         <div class="product-thumb"><?= lt_icon($product['icon'], '', 34) ?></div>
@@ -126,7 +248,7 @@ require_once __DIR__ . '/includes/sidebar.php';
                             <span class="badge badge-neutral product-tag"><?= htmlspecialchars($product['tag']) ?></span>
                             <p class="product-name"><?= htmlspecialchars($product['name']) ?></p>
                             <p class="product-desc"><?= htmlspecialchars($product['desc']) ?></p>
-                            <a href="#" class="btn btn-secondary btn-sm btn-block">Lihat Detail</a>
+                            <a href="products.php" class="btn btn-secondary btn-sm btn-block">Lihat Detail</a>
                         </div>
                     </div>
                 <?php endforeach; ?>

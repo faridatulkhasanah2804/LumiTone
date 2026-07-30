@@ -1,10 +1,22 @@
 <?php
+session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: index.php");
+    exit();
+}
+
 /**
- * dashboard.php
+ * analysis.php
  * ------------------------------------------------------------------
- * Main dashboard ("Beranda") page shown after a user logs in.
- * All data comes from includes/data.php (dummy for now, ready to be
- * swapped for real database queries later).
+ * AI Skin Analysis page. The upload UI (#uploadState) and result
+ * template (#resultState) below are still filled in client-side by
+ * assets/js/analysis.js after a photo is uploaded/analyzed — that
+ * file wasn't part of this refactor pass, so the result markup is
+ * left as a static template for now. Once analysis.js (and its
+ * upload/analyze endpoint) is available, that endpoint should
+ * INSERT into `analysis` + `recommendations` + `analysis_products`
+ * using the same shapes used in history.php/dashboard.php above.
  * ------------------------------------------------------------------
  */
 
@@ -57,6 +69,7 @@ if (!function_exists('ai_icon')) {
     }
 }
 ?>
+  <?php require __DIR__ . '/includes/topbar.php'; ?>
 
 <div class="analysis-page">
 

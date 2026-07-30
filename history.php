@@ -1,11 +1,18 @@
 <?php
+session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: index.php");
+    exit();
+}
+
 /**
  * history.php
  * ------------------------------------------------------------------
  * Analysis History page: shows every past AI Skin Analysis result
  * the user has run, with search, filter, sort, a detail modal, and
- * pagination. Uses dummy PHP array data for now ($historyData),
- * ready to be swapped for real database queries later.
+ * pagination. $historyData is now built from `analysis` +
+ * `recommendations` + `analysis_products` for the logged-in user.
  *
  * Follows the exact same page skeleton as dashboard.php / analysis.php:
  *   $pageTitle / $activePage -> header.php -> sidebar.php -> topbar.php
@@ -49,93 +56,70 @@ if (!function_exists('hist_icon')) {
 
 /**
  * ------------------------------------------------------------------
- * DUMMY DATA — history of past AI skin analyses.
- * Replace with a real query (e.g. SELECT * FROM analyses WHERE
- * user_id = ? ORDER BY created_at DESC) once the database is ready.
+ * $historyData — every past AI skin analysis for the logged-in user.
+ * Sourced from `analysis`, with per-row lookups into
+ * `recommendations` (for the color palette) and `analysis_products`
+ * + `products` (for the recommended product names).
  * ------------------------------------------------------------------
  */
-$historyData = [
-    [
-        'id'          => 1,
-        'initials'    => 'FN',
-        'photo'       => '',
-        'date'        => '2 Jan 2024, 14:30',
-        'month'       => '2024-01',
-        'skintone'    => 'Light - Medium',
-        'swatch'      => '#E7B98F',
-        'undertone'   => 'Warm (Kuning/Emas)',
-        'skintype'    => 'Kombinasi',
-        'concern'     => 'Pori-pori besar',
-        'status'      => 'Selesai',
-        'confidence'  => 94,
-        'colors'      => ['#C98A5E', '#D9A374', '#E4B98C', '#F1D9B5'],
-        'products'    => ['Gentle Foaming Cleanser', 'Vitamin C Brightening Serum', 'Daily Matte Sunscreen SPF 50+'],
-    ],
-    [
-        'id'          => 2,
-        'initials'    => 'FN',
-        'photo'       => '',
-        'date'        => '18 Des 2023, 10:15',
-        'month'       => '2023-12',
-        'skintone'    => 'Light - Medium',
-        'swatch'      => '#E7B98F',
-        'undertone'   => 'Warm (Kuning/Emas)',
-        'skintype'    => 'Kombinasi',
-        'concern'     => 'Kemerahan ringan',
-        'status'      => 'Selesai',
-        'confidence'  => 91,
-        'colors'      => ['#C98A5E', '#D9A374', '#E4B98C'],
-        'products'    => ['Soothing Centella Toner', 'Barrier Repair Moisturizer'],
-    ],
-    [
-        'id'          => 3,
-        'initials'    => 'FN',
-        'photo'       => '',
-        'date'        => '5 Des 2023, 16:45',
-        'month'       => '2023-12',
-        'skintone'    => 'Medium',
-        'swatch'      => '#C99169',
-        'undertone'   => 'Neutral',
-        'skintype'    => 'Normal',
-        'concern'     => 'Garis halus',
-        'status'      => 'Selesai',
-        'confidence'  => 88,
-        'colors'      => ['#B9825A', '#C99169', '#D9A87A'],
-        'products'    => ['Hydrating Gel Moisturizer', 'Retinol Night Serum'],
-    ],
-    [
-        'id'          => 4,
-        'initials'    => 'FN',
-        'photo'       => '',
-        'date'        => '29 Nov 2023, 09:05',
-        'month'       => '2023-11',
-        'skintone'    => 'Medium',
-        'swatch'      => '#C99169',
-        'undertone'   => 'Neutral',
-        'skintype'    => 'Berminyak',
-        'concern'     => 'Sedang diproses',
-        'status'      => 'Diproses',
-        'confidence'  => 0,
-        'colors'      => [],
-        'products'    => [],
-    ],
-    [
-        'id'          => 5,
-        'initials'    => 'FN',
-        'photo'       => '',
-        'date'        => '14 Nov 2023, 19:20',
-        'month'       => '2023-11',
-        'skintone'    => 'Deep',
-        'swatch'      => '#8C5A38',
-        'undertone'   => 'Warm (Kuning/Emas)',
-        'skintype'    => 'Berminyak',
-        'concern'     => 'Pori-pori besar',
-        'status'      => 'Selesai',
-        'confidence'  => 90,
-        'colors'      => ['#8C5A38', '#A06B45', '#B47D54'],
-        'products'    => ['Oil Control Clay Mask', 'Niacinamide Serum'],
-    ],
-];
+$userId = (int) $_SESSION['user_id'];
+
+$historyData = [];
+
+$stmt = mysqli_prepare($conn, 'SELECT id, skin_tone, undertone, skin_type, concerns, status, confidence, created_at
+    FROM analysis WHERE user_id = ? ORDER BY created_at DESC');
+mysqli_stmt_bind_param($stmt, 'i', $userId);
+mysqli_stmt_execute($stmt);
+$analysisResult = mysqli_stmt_get_result($stmt);
+$analysisRows   = mysqli_fetch_all($analysisResult, MYSQLI_ASSOC);
+mysqli_stmt_close($stmt);
+
+$colorStmt   = mysqli_prepare($conn, 'SELECT clothing FROM recommendations WHERE analysis_id = ? LIMIT 1');
+$productStmt = mysqli_prepare($conn, 'SELECT p.product_name FROM analysis_products ap
+    INNER JOIN products p ON p.id = ap.product_id WHERE ap.analysis_id = ?');
+
+foreach ($analysisRows as $row) {
+    $concerns    = lt_json_list($row['concerns']);
+    $mainConcern = $concerns[0]['label'] ?? ($row['status'] === 'processing' ? 'Sedang diproses' : '—');
+
+    $colors = [];
+    mysqli_stmt_bind_param($colorStmt, 'i', $row['id']);
+    mysqli_stmt_execute($colorStmt);
+    if ($rec = mysqli_fetch_assoc(mysqli_stmt_get_result($colorStmt))) {
+        foreach (lt_json_list($rec['clothing']) as $c) {
+            $colors[] = is_array($c) ? ($c['hex'] ?? '') : $c;
+        }
+        $colors = array_filter($colors);
+    }
+
+    $products = [];
+    mysqli_stmt_bind_param($productStmt, 'i', $row['id']);
+    mysqli_stmt_execute($productStmt);
+    $prodRows = mysqli_stmt_get_result($productStmt);
+    while ($p = mysqli_fetch_assoc($prodRows)) {
+        $products[] = $p['product_name'];
+    }
+
+    $historyData[] = [
+        'id'         => $row['id'],
+        'initials'   => $currentUser['initials'],
+        'photo'      => '',
+        'date'       => date('j M Y, H:i', strtotime($row['created_at'])),
+        'month'      => date('Y-m', strtotime($row['created_at'])),
+        'skintone'   => $row['skin_tone'] ?? '—',
+        'swatch'     => lt_skintone_to_hex($row['skin_tone']),
+        'undertone'  => $row['undertone'] ?? '—',
+        'skintype'   => $row['skin_type'] ?? '—',
+        'concern'    => $mainConcern,
+        'status'     => $row['status'] === 'completed' ? 'Selesai' : 'Diproses',
+        'confidence' => (int) $row['confidence'],
+        'colors'     => $colors,
+        'products'   => $products,
+    ];
+}
+
+mysqli_stmt_close($colorStmt);
+mysqli_stmt_close($productStmt);
 ?>
 <main class="main-content">
 

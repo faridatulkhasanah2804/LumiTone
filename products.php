@@ -1,12 +1,18 @@
 <?php
+session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: index.php");
+    exit();
+}
+
 /**
  * products.php
  * ------------------------------------------------------------------
- * Product Recommendation page: shows AI-curated skincare products
- * based on the user's latest skin analysis, with search, category
- * filter, sort, a detail modal, and pagination. Uses dummy PHP array
- * data for now ($productsData), ready to be swapped for real
- * database queries later.
+ * Product Recommendation page: shows AI-curated skincare products,
+ * with search, category filter, sort, a detail modal, and
+ * pagination. $productsData and $categories now come from the
+ * `products` table instead of a dummy PHP array.
  *
  * Follows the exact same page skeleton as dashboard.php / history.php:
  *   $pageTitle / $activePage -> header.php -> sidebar.php -> topbar.php
@@ -49,103 +55,49 @@ if (!function_exists('prod_icon')) {
 
 /**
  * ------------------------------------------------------------------
- * DUMMY DATA — AI-recommended products based on the user's latest
- * skin analysis. Replace with a real query once the database and
- * recommendation engine are ready.
+ * $productsData — products actually recommended to THIS user, based
+ * on their own analyses (via `analysis_products`). A user who hasn't
+ * run any analysis yet will simply see no products (empty state),
+ * rather than the entire global catalog.
  * ------------------------------------------------------------------
  */
-$productsData = [
-    [
-        'id'          => 1,
-        'name'        => 'Gentle Foaming Cleanser',
-        'category'    => 'Cleanser',
-        'icon'        => 'droplet',
-        'desc'        => 'Membersihkan wajah tanpa membuat kulit terasa kering atau tertarik.',
-        'match'       => 96,
-        'concerns'    => ['Pori-pori besar', 'Kulit kombinasi'],
-        'ingredients' => ['Ceramide', 'Panthenol', 'Amino Surfactant'],
-        'how_to_use'  => 'Gunakan pagi dan malam pada wajah lembap, pijat lembut 30 detik lalu bilas.',
-    ],
-    [
-        'id'          => 2,
-        'name'        => 'Vitamin C Brightening Serum',
-        'category'    => 'Serum',
-        'icon'        => 'sparkles',
-        'desc'        => 'Mencerahkan warna kulit dan menyamarkan bekas jerawat secara bertahap.',
-        'match'       => 92,
-        'concerns'    => ['Kusam', 'Bekas jerawat'],
-        'ingredients' => ['Vitamin C 10%', 'Vitamin E', 'Ferulic Acid'],
-        'how_to_use'  => 'Aplikasikan 2-3 tetes di pagi hari sebelum sunscreen.',
-    ],
-    [
-        'id'          => 3,
-        'name'        => 'Daily Matte Sunscreen SPF 50+',
-        'category'    => 'Sunscreen',
-        'icon'        => 'shield-check',
-        'desc'        => 'Melindungi kulit dari sinar UV tanpa meninggalkan white cast.',
-        'match'       => 98,
-        'concerns'    => ['Kulit berminyak', 'Proteksi UV'],
-        'ingredients' => ['Niacinamide', 'Zinc Oxide', 'Silica'],
-        'how_to_use'  => 'Aplikasikan sebagai langkah terakhir skincare pagi, ulangi tiap 3-4 jam.',
-    ],
-    [
-        'id'          => 4,
-        'name'        => 'Soothing Centella Toner',
-        'category'    => 'Toner',
-        'icon'        => 'droplet',
-        'desc'        => 'Menenangkan kemerahan dan menjaga keseimbangan pH kulit.',
-        'match'       => 89,
-        'concerns'    => ['Kemerahan ringan', 'Kulit sensitif'],
-        'ingredients' => ['Centella Asiatica', 'Panthenol', 'Allantoin'],
-        'how_to_use'  => 'Tuang ke kapas atau tangan, tepuk lembut setelah cleansing.',
-    ],
-    [
-        'id'          => 5,
-        'name'        => 'Barrier Repair Moisturizer',
-        'category'    => 'Moisturizer',
-        'icon'        => 'droplet',
-        'desc'        => 'Memperkuat skin barrier dan menjaga kelembapan sepanjang hari.',
-        'match'       => 94,
-        'concerns'    => ['Kulit kering', 'Skin barrier lemah'],
-        'ingredients' => ['Ceramide NP', 'Squalane', 'Shea Butter'],
-        'how_to_use'  => 'Gunakan sebagai langkah terakhir pagi dan malam pada wajah bersih.',
-    ],
-    [
-        'id'          => 6,
-        'name'        => 'Retinol Night Serum',
-        'category'    => 'Serum',
-        'icon'        => 'sparkles',
-        'desc'        => 'Membantu regenerasi kulit dan menyamarkan garis halus.',
-        'match'       => 85,
-        'concerns'    => ['Garis halus', 'Tekstur kulit'],
-        'ingredients' => ['Retinol 0.3%', 'Squalane', 'Vitamin E'],
-        'how_to_use'  => 'Gunakan malam hari 2-3x seminggu, selalu diikuti sunscreen keesokan paginya.',
-    ],
-    [
-        'id'          => 7,
-        'name'        => 'Oil Control Clay Mask',
-        'category'    => 'Mask',
-        'icon'        => 'palette',
-        'desc'        => 'Menyerap minyak berlebih dan membersihkan pori-pori secara mendalam.',
-        'match'       => 87,
-        'concerns'    => ['Kulit berminyak', 'Pori-pori besar'],
-        'ingredients' => ['Kaolin Clay', 'Tea Tree Oil', 'Niacinamide'],
-        'how_to_use'  => 'Aplikasikan tipis 10-15 menit, 1-2x seminggu, lalu bilas dengan air hangat.',
-    ],
-    [
-        'id'          => 8,
-        'name'        => 'Niacinamide 10% Serum',
-        'category'    => 'Serum',
-        'icon'        => 'sparkles',
-        'desc'        => 'Mengecilkan tampilan pori dan meratakan warna kulit.',
-        'match'       => 90,
-        'concerns'    => ['Pori-pori besar', 'Kusam'],
-        'ingredients' => ['Niacinamide 10%', 'Zinc PCA'],
-        'how_to_use'  => 'Gunakan pagi/malam setelah toner, sebelum moisturizer.',
-    ],
-];
+$userId = (int) $_SESSION['user_id'];
 
-$categories = ['All', 'Cleanser', 'Toner', 'Serum', 'Moisturizer', 'Sunscreen', 'Mask'];
+$productsData = [];
+
+$stmt = mysqli_prepare($conn, 'SELECT DISTINCT p.id, p.category, p.product_name, p.description, p.match_score, p.concerns, p.ingredients, p.how_to_use
+    FROM analysis_products ap
+    INNER JOIN products p ON p.id = ap.product_id
+    INNER JOIN analysis a ON a.id = ap.analysis_id
+    WHERE a.user_id = ?
+    ORDER BY p.match_score DESC, p.product_name ASC');
+mysqli_stmt_bind_param($stmt, 'i', $userId);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+
+while ($row = mysqli_fetch_assoc($result)) {
+    $productsData[] = [
+        'id'          => (int) $row['id'],
+        'name'        => $row['product_name'],
+        'category'    => $row['category'] ?? 'Lainnya',
+        'icon'        => lt_category_to_icon($row['category']),
+        'desc'        => $row['description'] ?? '',
+        'match'       => (int) ($row['match_score'] ?? 0),
+        'concerns'    => lt_json_list($row['concerns']),
+        'ingredients' => lt_json_list($row['ingredients']),
+        'how_to_use'  => $row['how_to_use'] ?? '',
+    ];
+}
+mysqli_stmt_close($stmt);
+
+// Category tabs — only categories that actually appear among this user's
+// recommended products (so the filter never offers empty categories).
+$categories = ['All'];
+foreach ($productsData as $p) {
+    if (!in_array($p['category'], $categories, true)) {
+        $categories[] = $p['category'];
+    }
+}
 ?>
 <main class="main-content">
 
@@ -209,6 +161,14 @@ $categories = ['All', 'Cleanser', 'Toner', 'Serum', 'Moisturizer', 'Sunscreen', 
              4. PRODUCTS GRID
         =================================================== -->
         <section class="reveal">
+            <?php if (empty($productsData)): ?>
+                <div class="products-empty" id="productsNoAnalysisYet">
+                    <div class="products-empty-icon"><?= prod_icon('inbox', 30) ?></div>
+                    <p class="products-empty-title">Belum ada rekomendasi produk</p>
+                    <p class="products-empty-desc">Rekomendasi akan muncul di sini setelah kamu menyelesaikan AI Skin Analysis pertamamu.</p>
+                    <a href="analysis.php" class="btn btn-primary btn-sm"><?= lt_icon('scan-face', '', 16) ?> Mulai Analisis</a>
+                </div>
+            <?php else: ?>
             <div class="products-grid" id="productsGrid">
                 <?php foreach ($productsData as $product): ?>
                     <div class="product-card products-card"
@@ -235,7 +195,7 @@ $categories = ['All', 'Cleanser', 'Toner', 'Serum', 'Moisturizer', 'Sunscreen', 
             </div>
 
             <!-- ==================================================
-                 EMPTY STATE (hidden unless the grid has 0 visible cards)
+                 EMPTY STATE (hidden unless search/filter narrows to 0 cards)
             =================================================== -->
             <div class="products-empty is-hidden" id="productsEmpty">
                 <div class="products-empty-icon"><?= prod_icon('inbox', 30) ?></div>
@@ -259,6 +219,7 @@ $categories = ['All', 'Cleanser', 'Toner', 'Serum', 'Moisturizer', 'Sunscreen', 
                     Next <?= lt_icon('chevron-right', '', 15) ?>
                 </button>
             </nav>
+            <?php endif; ?>
         </section>
 
     </div>
