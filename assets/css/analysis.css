@@ -1,7 +1,11 @@
 /* ==========================================================================
    analysis.css
    Halaman AI Analysis: upload/kamera, overlay proses, dan hasil analisis.
-   Menggunakan CSS variables yang sama dengan layout.css.
+   Menggunakan CSS variables yang sama dengan variables.css. Panel-panel
+   utama (upload card, tips card, analyzing overlay, result stat cards,
+   camera box) pakai gaya "glass" yang sama dengan feature-card di landing
+   page dan .settings-card / .stat-card di dashboard — supaya semua
+   halaman terasa satu produk yang sama.
    ========================================================================== */
 
 /* ---- Self-contained page padding (aman meski wrapper luar tidak beri padding) ---- */
@@ -38,7 +42,7 @@
     font-size: 1.65rem;
     font-weight: 700;
     margin: 0;
-    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: var(--font-sans);
     letter-spacing: -0.01em;
     line-height: 1.2;
 }
@@ -61,7 +65,7 @@
 }
 .btn-primary { background: var(--color-primary); color: #fff; }
 .btn-primary:hover { filter: brightness(1.06); transform: translateY(-1px); box-shadow: var(--shadow-xs); }
-.btn-outline { background: #fff; color: var(--color-text); border: 1px solid var(--color-border); }
+.btn-outline { background: var(--color-surface); color: var(--color-text); border: 1px solid var(--color-border); }
 .btn-outline:hover { border-color: var(--color-primary); color: var(--color-primary); }
 .btn-sm { padding: 0.6rem 1rem; font-size: 0.82rem; }
 .btn-block { width: 100%; padding-top: 0.85rem; padding-bottom: 0.85rem; }
@@ -83,16 +87,24 @@
 
 .is-hidden { display: none !important; }
 
-/* ---- Upload card ---- */
+/* ---- Upload card (glass) ---- */
 .analysis-upload-card {
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
     border-radius: var(--radius-lg);
     padding: 1.75rem;
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
-    box-shadow: var(--shadow-xs);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    box-shadow: var(--glass-shadow);
+    transition: box-shadow var(--transition-base), border-color var(--transition-base), background var(--transition-base);
+}
+.analysis-upload-card:hover {
+    border-color: var(--glass-border-hover);
+    background: var(--glass-bg-hover);
+    box-shadow: var(--glass-shadow-hover);
 }
 
 .upload-tabs { display: flex; gap: 0.35rem; background: var(--color-bg); padding: 0.3rem; border-radius: var(--radius-full); }
@@ -111,6 +123,8 @@
 }
 .upload-tab:hover:not(.is-active) { color: var(--color-primary); }
 .upload-tab.is-active { background: var(--color-primary); color: #fff; box-shadow: var(--shadow-glow); }
+/* ---- Fix click penetration on tab icon/text ---- */
+.upload-tab * { pointer-events: none; }
 
 .dropzone {
     border: 1.5px dashed var(--color-border);
@@ -125,10 +139,10 @@
     background: var(--color-bg);
     transition: border-color var(--transition-base), background var(--transition-base);
 }
-.dropzone:hover, .dropzone.is-drag-over { border-color: var(--color-primary); background: rgba(111, 142, 82, 0.06); }
+.dropzone:hover, .dropzone.is-drag-over { border-color: var(--color-primary); background: rgba(124, 148, 115, 0.06); }
 .dropzone-icon {
     color: var(--color-primary);
-    background: #fff;
+    background: var(--color-surface);
     width: 60px;
     height: 60px;
     display: flex;
@@ -164,13 +178,54 @@
 }
 .preview-remove:hover { background: var(--color-danger); }
 
-/* ---- Tips panel ---- */
+/* ---- Camera box & video stream (glass, matches the upload card next to it) ---- */
+.camera-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+}
+.camera-box video {
+    width: 100%;
+    max-height: 360px;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+    background: #000; /* camera feed backdrop stays black in both modes, not a theme token */
+}
+.camera-box.is-hidden { display: none; }
+.camera-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    width: 100%;
+}
+@media (max-width: 480px) {
+    .camera-actions { flex-direction: column; }
+    .camera-actions .btn { width: 100%; }
+}
+
+/* ---- Tips panel (glass, same recipe as the upload card) ---- */
 .analysis-tips-card {
-    background: linear-gradient(160deg, var(--color-accent) 0%, #fff 130%);
-    border: 1px solid var(--color-border);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
     border-radius: var(--radius-lg);
     padding: 1.75rem;
     align-self: start;
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    box-shadow: var(--glass-shadow);
+    transition: box-shadow var(--transition-base), border-color var(--transition-base), background var(--transition-base);
+}
+.analysis-tips-card:hover {
+    border-color: var(--glass-border-hover);
+    background: var(--glass-bg-hover);
+    box-shadow: var(--glass-shadow-hover);
 }
 .tips-title { display: flex; align-items: center; gap: 0.5rem; font-size: 1rem; font-weight: 700; margin: 0 0 1.1rem; color: var(--color-text); }
 .tips-title .ai-icon { color: var(--color-primary); }
@@ -178,7 +233,7 @@
 .tips-list li { display: flex; align-items: flex-start; gap: 0.65rem; font-size: 0.85rem; line-height: 1.45; color: var(--color-text-soft); }
 .tips-list li .ai-icon {
     color: var(--color-primary);
-    background: #fff;
+    background: var(--color-surface);
     border-radius: 50%;
     width: 22px;
     height: 22px;
@@ -193,10 +248,10 @@
     line-height: 1.55;
     margin: 0;
     padding-top: 1rem;
-    border-top: 1px solid rgba(27, 42, 22, 0.08);
+    border-top: 1px solid var(--glass-border);
 }
 
-/* ---- Analyzing overlay ---- */
+/* ---- Analyzing overlay (glass) ---- */
 .analyzing-overlay {
     grid-column: 1 / -1;
     display: flex;
@@ -205,10 +260,12 @@
     justify-content: center;
     gap: 0.9rem;
     padding: 3.5rem 1rem;
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
     border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-xs);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    box-shadow: var(--glass-shadow);
 }
 .analyzing-spinner {
     width: 46px;
@@ -225,8 +282,11 @@
 /* ---- Result state ---- */
 .analysis-result { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 1.5rem; }
 
+/* Hero summary — solid gradient, same treatment as .welcome-card on the
+   dashboard. This is the one "loud" element on the page, so it stays
+   solid rather than glass. */
 .result-summary-card {
-    background: var(--color-primary);
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
     border-radius: var(--radius-lg);
     padding: 1.5rem;
     display: flex;
@@ -251,14 +311,22 @@
 
 .result-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
 .result-stat-card {
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
     border-radius: var(--radius-lg);
     padding: 1.2rem;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    box-shadow: var(--shadow-xs);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    box-shadow: var(--glass-shadow);
+    transition: box-shadow var(--transition-base), border-color var(--transition-base), background var(--transition-base);
+}
+.result-stat-card:hover {
+    border-color: var(--glass-border-hover);
+    background: var(--glass-bg-hover);
+    box-shadow: var(--glass-shadow-hover);
 }
 .result-stat-card--wide { grid-column: 1 / -1; }
 .result-stat-label { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; font-weight: 600; color: var(--color-text-soft); }
@@ -268,6 +336,7 @@
 .tone-swatch-row { display: flex; gap: 0.5rem; margin-top: 0.2rem; }
 .tone-swatch { width: 34px; height: 34px; border-radius: var(--radius-sm); box-shadow: var(--shadow-xs); }
 
+/* Small pills stay solid — kept distinct from the glass cards around them */
 .concern-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .concern-tag {
     background: var(--color-bg);
@@ -328,13 +397,17 @@
     .result-actions { flex-direction: column; }
     .result-actions .btn { width: 100%; }
 }
-/* ---------- Color Analysis Section ---------- */
+
+/* ---------- Color Analysis Section (glass) ---------- */
 .result-color-section {
     margin-top: 24px;
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
     border-radius: var(--radius-lg);
     padding: 32px 28px;
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    box-shadow: var(--glass-shadow);
 }
 
 .color-section-head {
@@ -343,6 +416,9 @@
     margin: 0 auto 28px;
 }
 
+/* Season badge & swatch colors below are content colors (representing
+   the actual "color season" result), not app-theme colors — left as-is
+   on purpose rather than tied to --color-primary/--color-danger. */
 .color-season-badge {
     display: inline-flex;
     align-items: center;
@@ -380,6 +456,9 @@
     gap: 18px;
 }
 
+/* Nested sub-cards stay solid (--color-bg) — this keeps a visible
+   step of depth between the glass section and the swatch groups
+   inside it, rather than everything blurring into one flat layer. */
 .color-palette-card {
     background: var(--color-bg);
     border: 1px solid var(--color-border);
@@ -407,8 +486,8 @@
 }
 
 .palette-icon-tile--avoid {
-    background: rgba(184, 92, 74, 0.14);
-    color: #A85D45;
+    background: var(--color-danger-bg);
+    color: var(--color-danger);
 }
 
 .palette-label {
@@ -451,21 +530,22 @@
 }
 
 .color-palette-card--avoid {
-    background: #FBF7F5;
+    background: var(--color-danger-bg);
 }
 
 .palette-avoid-note {
     margin-top: 16px;
     font-size: 12px;
     line-height: 1.5;
-    color: #8A6A5F;
+    color: var(--color-danger);
     font-style: italic;
 }
 
 @media (max-width: 640px) {
     .result-color-section { padding: 24px 18px; }
 }
-/* ---------- Quick Swatch Cards ---------- */
+
+/* ---------- Quick Swatch Cards (glass) ---------- */
 .swatch-cards-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -474,11 +554,18 @@
 }
 
 .swatch-card {
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
     border-radius: var(--radius-md);
     padding: 16px 14px;
     text-align: center;
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    transition: box-shadow var(--transition-base), border-color var(--transition-base), background var(--transition-base);
+}
+.swatch-card:hover {
+    border-color: var(--glass-border-hover);
+    background: var(--glass-bg-hover);
 }
 
 .swatch-card-title {
@@ -540,44 +627,4 @@
 @media (max-width: 480px) {
     .swatch-cards-grid { grid-template-columns: 1fr; }
     .swatch-card { padding: 14px; }
-}
-/* ---- Fix Click Penetration pada Tab ---- */
-.upload-tab * {
-    pointer-events: none;
-}
-
-/* ---- Camera Box & Video Stream ---- */
-.camera-box {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-    background: var(--color-bg);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    padding: 1rem;
-}
-
-.camera-box video {
-    width: 100%;
-    max-height: 360px;
-    object-fit: cover;
-    border-radius: var(--radius-md);
-    background: #000;
-}
-
-.camera-actions {
-    display: flex;
-    gap: 0.75rem;
-    justify-content: center;
-    width: 100%;
-}
-
-@media (max-width: 480px) {
-    .camera-actions {
-        flex-direction: column;
-    }
-    .camera-actions .btn {
-        width: 100%;
-    }
 }

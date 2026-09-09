@@ -162,7 +162,9 @@ if ($latestAnalysis) {
                     <?php endforeach; ?>
                 </div>
             </div>
-            <div class="welcome-visual"><?= lt_icon('scan-face', '', 56) ?></div>
+            <div class="welcome-visual">
+                <video class="welcome-visual-video" src="assets/hero.mp4" autoplay loop muted playsinline></video>
+            </div>
         </section>
 
         <!-- ==================================================

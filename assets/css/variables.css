@@ -52,6 +52,24 @@
     --shadow-lg: 0 24px 55px -25px rgba(124, 148, 115, 0.3);
     --shadow-glow: 0 10px 26px -12px rgba(124, 148, 115, 0.3);
 
+    /* Glass / transparency — same recipe as the landing page's
+       feature/testimonial/FAQ cards, so any card on the dashboard can
+       opt into the "frosted" look just by using these tokens instead
+       of --color-surface. */
+    --glass-bg: rgba(255, 255, 255, 0.35);
+    --glass-bg-hover: rgba(255, 255, 255, 0.5);
+    --glass-border: rgba(255, 255, 255, 0.6);
+    --glass-border-hover: rgba(255, 255, 255, 0.8);
+    --glass-blur: blur(20px) saturate(140%);
+    --glass-shadow:
+        0 8px 32px rgba(27, 42, 22, 0.10),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.15);
+    --glass-shadow-hover:
+        0 20px 48px rgba(27, 42, 22, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.75),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.2);
+
     /* Layout */
     --sidebar-width: 264px;
     --sidebar-width-min: 200px;
@@ -105,4 +123,19 @@
     --shadow-md: 0 20px 45px -20px rgba(0, 0, 0, 0.55);
     --shadow-lg: 0 24px 55px -25px rgba(0, 0, 0, 0.6);
     --shadow-glow: 0 10px 26px -12px rgba(147, 179, 127, 0.35);
+
+    /* Glass tokens flip to a faint white haze over dark surfaces instead
+       of a white haze over cream — same layering, different base. */
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-bg-hover: rgba(255, 255, 255, 0.09);
+    --glass-border: rgba(255, 255, 255, 0.10);
+    --glass-border-hover: rgba(255, 255, 255, 0.18);
+    --glass-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+    --glass-shadow-hover:
+        0 20px 48px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.25);
 }
