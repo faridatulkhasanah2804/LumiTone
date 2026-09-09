@@ -1,0 +1,19 @@
+.camera-box { text-align: center; }
+.camera-box video {
+    width: 100%;
+    max-width: 480px;
+    border-radius: 16px;
+    background: #000;
+}
+.camera-box.is-hidden { display: none; }
+.camera-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-top: 0.75rem;
+}
+.result-note-block {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--color-text-muted, #7a7a8c);
+}

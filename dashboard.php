@@ -228,33 +228,7 @@ if ($latestAnalysis) {
         <!-- ==================================================
              3. RECOMMENDED PRODUCTS
         =================================================== -->
-        <section class="reveal">
-            <div class="section-heading">
-                <div>
-                    <h2>Recommended Products</h2>
-                    <p>Dipilih berdasarkan hasil analisis kulitmu.</p>
-                </div>
-                <a href="products.php" class="section-link">Lihat Semua <?= lt_icon('chevron-right', '', 15) ?></a>
-            </div>
-
-            <div class="products-grid">
-                <?php if (empty($products)): ?>
-                    <p class="cell-muted">Belum ada rekomendasi produk. <a href="analysis.php">Mulai analisis</a> untuk mendapatkan rekomendasi.</p>
-                <?php endif; ?>
-                <?php foreach ($products as $product): ?>
-                    <div class="product-card">
-                        <div class="product-thumb"><?= lt_icon($product['icon'], '', 34) ?></div>
-                        <div class="product-body">
-                            <span class="badge badge-neutral product-tag"><?= htmlspecialchars($product['tag']) ?></span>
-                            <p class="product-name"><?= htmlspecialchars($product['name']) ?></p>
-                            <p class="product-desc"><?= htmlspecialchars($product['desc']) ?></p>
-                            <a href="products.php" class="btn btn-secondary btn-sm btn-block">Lihat Detail</a>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-        </section>
-
+      
     </div>
 
     <?php require __DIR__ . '/includes/footer.php'; ?>

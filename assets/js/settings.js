@@ -34,6 +34,28 @@
         });
     });
 
+    /* ---- 2b) Theme toggle — actually applies dark mode (the block above
+       only logs). Flips data-theme on <html>, which every color token in
+       variables.css reacts to, and remembers the choice for next visit. ---- */
+    var THEME_STORAGE_KEY = 'lt-theme';
+
+    function applyTheme(theme) {
+        theme = theme === 'dark' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', theme);
+        try {
+            localStorage.setItem(THEME_STORAGE_KEY, theme);
+        } catch (e) {
+            /* localStorage unavailable — theme just won't persist across reloads */
+        }
+    }
+
+    document.querySelectorAll('input[name="theme"]').forEach(function (input) {
+        input.addEventListener('change', function () {
+            if (!input.checked) return;
+            applyTheme(input.value === 'Dark Mode' ? 'dark' : 'light');
+        });
+    });
+
     /* ---- 3) Inline selects ---- */
     document.querySelectorAll('[data-pref]').forEach(function (el) {
         if (el.tagName !== 'SELECT') return;

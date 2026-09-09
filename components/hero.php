@@ -3,10 +3,15 @@
      Centered layout with headline, AI badge, CTA,
      and ambient background decorations (glows + sparkles)
 ============================================ -->
-<section class="hero" id="home">
+<section class="hero hero--video" id="home">
 
     <!-- Background decorations -->
     <div class="hero__bg" aria-hidden="true">
+        <video class="hero__video" autoplay muted loop playsinline poster="assets/images/hero-poster.jpg">
+            <source src="assets/landing.mp4" type="video/mp4">
+        </video>
+        <div class="hero__overlay"></div>
+
         <div class="hero__glow hero__glow--1"></div>
         <div class="hero__glow hero__glow--2"></div>
         <div class="hero__glow hero__glow--3"></div>

@@ -183,7 +183,7 @@ if (!function_exists('settings_icon')) {
                         <span class="settings-row-label">Profile Visibility</span>
                         <span class="settings-row-desc">Siapa yang bisa melihat profilmu.</span>
                     </div>
-                    <select class="settings-select-inline" data-pref="privacy.profile">
+                    <select class="settings-select-inline" id="privacy-profile" name="privacy_profile" data-pref="privacy.profile">
                         <option <?= $settings['privacy']['profile'] === 'Private' ? 'selected' : '' ?>>Private</option>
                         <option <?= $settings['privacy']['profile'] === 'Public' ? 'selected' : '' ?>>Public</option>
                     </select>
@@ -247,14 +247,14 @@ if (!function_exists('settings_icon')) {
                 <div class="settings-form-grid">
                     <label class="settings-select-field">
                         <span class="settings-field-label">Language</span>
-                        <select data-pref="language.current">
+                        <select id="language-current" name="language_current" data-pref="language.current">
                             <option <?= $settings['language']['current'] === 'English' ? 'selected' : '' ?>>English</option>
                             <option <?= $settings['language']['current'] === 'Bahasa Indonesia' ? 'selected' : '' ?>>Bahasa Indonesia</option>
                         </select>
                     </label>
                     <label class="settings-select-field">
                         <span class="settings-field-label">Timezone</span>
-                        <select data-pref="language.timezone">
+                        <select id="language-timezone" name="language_timezone" data-pref="language.timezone">
                             <option selected>GMT+7 (WIB)</option>
                             <option>GMT+8 (WITA)</option>
                             <option>GMT+9 (WIT)</option>
@@ -262,7 +262,7 @@ if (!function_exists('settings_icon')) {
                     </label>
                     <label class="settings-select-field">
                         <span class="settings-field-label">Date Format</span>
-                        <select data-pref="language.dateFormat">
+                        <select id="language-dateformat" name="language_dateformat" data-pref="language.dateFormat">
                             <option selected>DD/MM/YYYY</option>
                             <option>MM/DD/YYYY</option>
                             <option>YYYY-MM-DD</option>
@@ -270,7 +270,7 @@ if (!function_exists('settings_icon')) {
                     </label>
                     <label class="settings-select-field">
                         <span class="settings-field-label">Currency</span>
-                        <select data-pref="language.currency">
+                        <select id="language-currency" name="language_currency" data-pref="language.currency">
                             <option selected>IDR (Rp)</option>
                             <option>USD ($)</option>
                         </select>

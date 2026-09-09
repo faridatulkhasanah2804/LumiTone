@@ -7,7 +7,7 @@
 
         <div class="section-heading">
             <span class="eyebrow fade-up">Cara Kerja</span>
-            <h2 class="section-title fade-up" style="--delay:0.05s">4 Langkah Mudah</h2>
+            <h2 class="section-title fade-up" style="--delay:0.05s">3 Langkah Mudah</h2>
             <p class="section-subtitle fade-up" style="--delay:0.1s">
                 Dari foto ke rekomendasi perawatan, prosesnya cepat dan sederhana.
             </p>
@@ -43,15 +43,8 @@
                 <p class="timeline__desc">Lihat hasil analisis lengkap dalam tampilan yang mudah dipahami.</p>
             </div>
 
-            <div class="timeline__connector" aria-hidden="true"></div>
+          
 
-            <div class="timeline__step fade-up" style="--delay: 0.35s">
-                <div class="timeline__marker">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 12h4l2-6 4 12 2-6h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </div>
-                <h3 class="timeline__title">Recommendation</h3>
-                <p class="timeline__desc">Dapatkan rekomendasi perawatan yang sesuai untuk kulitmu.</p>
-            </div>
 
         </div>
     </div>

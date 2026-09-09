@@ -61,3 +61,48 @@
     --transition-base: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-slow: 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+/* ==========================================================================
+   Dark Mode
+   Activated by setting data-theme="dark" on <html> (see assets/js/theme.js).
+   Only color tokens change — radius, shadow shape, type, and layout tokens
+   stay identical so components don't need separate dark-mode CSS.
+   ========================================================================== */
+:root[data-theme="dark"] {
+    /* Base surfaces */
+    --color-cream: #12160E;
+    --color-cream-soft: #1B2115;
+    --color-matcha: #93B37F;
+    --color-matcha-dark: #6F8A63;
+    --color-matcha-light: #7C9473;
+
+    --color-bg: #12160E;
+    --color-surface: #191F13;
+    --color-white: #FFFFFF;
+    --color-primary: var(--color-matcha);
+    --color-primary-dark: #B7D1A6;
+    --color-secondary: var(--color-matcha-light);
+    --color-accent: #232B1B;
+
+    --color-text: #EDEEE6;
+    --color-text-soft: rgba(237, 238, 230, 0.66);
+    --color-text-faint: rgba(237, 238, 230, 0.46);
+    --color-text-muted: rgba(237, 238, 230, 0.6);
+    --color-border: #2B331F;
+
+    /* Status colors */
+    --color-success: #8CB56C;
+    --color-success-bg: rgba(111, 142, 82, 0.18);
+    --color-warning: #E0B15E;
+    --color-warning-bg: rgba(192, 138, 46, 0.16);
+    --color-danger: #E08A70;
+    --color-danger-bg: rgba(184, 88, 63, 0.18);
+
+    /* Shadows lean on black instead of the matcha tint so cards still lift
+       off the dark background */
+    --shadow-xs: 0 4px 14px -6px rgba(0, 0, 0, 0.45);
+    --shadow-sm: 0 10px 28px -12px rgba(0, 0, 0, 0.5);
+    --shadow-md: 0 20px 45px -20px rgba(0, 0, 0, 0.55);
+    --shadow-lg: 0 24px 55px -25px rgba(0, 0, 0, 0.6);
+    --shadow-glow: 0 10px 26px -12px rgba(147, 179, 127, 0.35);
+}

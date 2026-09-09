@@ -541,3 +541,43 @@
     .swatch-cards-grid { grid-template-columns: 1fr; }
     .swatch-card { padding: 14px; }
 }
+/* ---- Fix Click Penetration pada Tab ---- */
+.upload-tab * {
+    pointer-events: none;
+}
+
+/* ---- Camera Box & Video Stream ---- */
+.camera-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+}
+
+.camera-box video {
+    width: 100%;
+    max-height: 360px;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+    background: #000;
+}
+
+.camera-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    width: 100%;
+}
+
+@media (max-width: 480px) {
+    .camera-actions {
+        flex-direction: column;
+    }
+    .camera-actions .btn {
+        width: 100%;
+    }
+}

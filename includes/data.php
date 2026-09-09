@@ -21,7 +21,6 @@ $menuItems = [
     ['key' => 'dashboard', 'label' => 'Dashboard',              'icon' => 'grid',       'href' => 'dashboard.php'],
     ['key' => 'analysis',  'label' => 'AI Analysis',            'icon' => 'scan-face',  'href' => 'analysis.php'],
     ['key' => 'history',   'label' => 'Analysis History',       'icon' => 'history',    'href' => 'history.php'],
-    ['key' => 'products',  'label' => 'Product Recommendations','icon' => 'package',    'href' => 'products.php'],
     ['key' => 'saved',     'label' => 'Saved Results',          'icon' => 'bookmark',   'href' => 'saved.php'],
     ['key' => 'profile',   'label' => 'Profile',                'icon' => 'user',       'href' => 'profile.php'],
     ['key' => 'settings',  'label' => 'Settings',                'icon' => 'settings',   'href' => 'settings.php'],
