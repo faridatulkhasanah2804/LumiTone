@@ -11,6 +11,14 @@
  * / products.php / saved.php / profile.php:
  *   $pageTitle / $activePage -> header.php -> sidebar.php -> topbar.php
  *   -> .page-content -> footer.php
+ *
+ * Dark mode: the Theme radios below are wired up client-side by
+ * assets/js/theme.js (loaded globally from includes/header.php), which
+ * toggles [data-theme="dark"] on <html> and persists the choice to
+ * localStorage under the "lt-theme" key. data-pref is kept on
+ * the inputs too, purely so they save through the same generic
+ * pref-sync mechanism as every other field on this page once that's
+ * wired to a real backend.
  * ------------------------------------------------------------------
  */
 
@@ -93,11 +101,11 @@ if (!function_exists('settings_icon')) {
                     <span class="settings-field-label">Theme</span>
                     <div class="settings-pill-group" data-group="theme">
                         <label class="settings-pill">
-                            <input type="radio" name="theme" value="Light Mode" <?= $settings['appearance']['theme'] === 'Light Mode' ? 'checked' : '' ?>>
+                            <input type="radio" name="theme" value="Light Mode" data-pref="appearance.theme" <?= $settings['appearance']['theme'] === 'Light Mode' ? 'checked' : '' ?>>
                             <span><?= settings_icon('sun', 15) ?> Light Mode</span>
                         </label>
                         <label class="settings-pill">
-                            <input type="radio" name="theme" value="Dark Mode" <?= $settings['appearance']['theme'] === 'Dark Mode' ? 'checked' : '' ?>>
+                            <input type="radio" name="theme" value="Dark Mode" data-pref="appearance.theme" <?= $settings['appearance']['theme'] === 'Dark Mode' ? 'checked' : '' ?>>
                             <span><?= settings_icon('moon', 15) ?> Dark Mode</span>
                         </label>
                     </div>

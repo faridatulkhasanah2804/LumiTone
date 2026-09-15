@@ -5,7 +5,12 @@
  *  1) Toggle switches (Notifications, Data Sharing, Two-Factor) —
  *     dummy state only, logged to console for now
  *  2) Radio pill groups (Theme, Font Size) + color swatch group
- *     (Accent Color) — purely visual, no backend call yet
+ *     (Accent Color) — logged to console; Theme's *actual* dark-mode
+ *     switching lives in assets/js/theme.js (loaded globally by
+ *     includes/header.php), which already listens on the same
+ *     input[name="theme"] radios and applies [data-theme="dark"] on
+ *     <html> + persists it to localStorage under "lt-theme". No need
+ *     to duplicate that here.
  *  3) Inline select dropdowns (Profile Visibility, Language, etc.)
  *  4) Action buttons (Clear Cache, Download My Data, Export History,
  *     Restore Defaults, Manage Devices, Logout) — dummy confirmations
@@ -27,32 +32,13 @@
         });
     });
 
-    /* ---- 2) Radio pill / color groups (purely visual state, browser handles the radio logic) ---- */
+    /* ---- 2) Radio pill / color groups (purely visual state, browser handles the radio logic) ----
+       Theme's actual dark-mode switching is handled globally by assets/js/theme.js —
+       see the file header above. This listener just keeps logging every pill group,
+       Theme included, for consistency/debugging. */
     document.querySelectorAll('.settings-pill input[type="radio"], .settings-color-option input[type="radio"]').forEach(function (input) {
         input.addEventListener('change', function () {
             console.log('[Settings] ' + input.name + ' = ' + input.value);
-        });
-    });
-
-    /* ---- 2b) Theme toggle — actually applies dark mode (the block above
-       only logs). Flips data-theme on <html>, which every color token in
-       variables.css reacts to, and remembers the choice for next visit. ---- */
-    var THEME_STORAGE_KEY = 'lt-theme';
-
-    function applyTheme(theme) {
-        theme = theme === 'dark' ? 'dark' : 'light';
-        document.documentElement.setAttribute('data-theme', theme);
-        try {
-            localStorage.setItem(THEME_STORAGE_KEY, theme);
-        } catch (e) {
-            /* localStorage unavailable — theme just won't persist across reloads */
-        }
-    }
-
-    document.querySelectorAll('input[name="theme"]').forEach(function (input) {
-        input.addEventListener('change', function () {
-            if (!input.checked) return;
-            applyTheme(input.value === 'Dark Mode' ? 'dark' : 'light');
         });
     });
 
@@ -82,6 +68,12 @@
             if (action === 'restore-defaults') {
                 var confirmed = window.confirm('Kembalikan semua pengaturan ke default?');
                 if (!confirmed) return;
+
+                // Restore Defaults should also bring the theme back to light mode,
+                // since it's a "back to app defaults" action.
+                if (window.LumiTheme) {
+                    window.LumiTheme.set('light');
+                }
             }
 
             window.alert(message);

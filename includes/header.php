@@ -26,6 +26,26 @@ require_once __DIR__ . '/icons.php';
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title><?= htmlspecialchars($pageTitle) ?> — LumiTone</title>
 
+<!--
+    Dark mode: apply the saved theme (or the OS preference, if the user
+    hasn't chosen yet) before anything renders. Must run before the CSS
+    below paints, and stays inline (not a separate file) so the browser
+    never has to make an extra request to know which theme to show.
+    See assets/js/theme.js for the full toggle logic.
+-->
+<script>
+(function () {
+    try {
+        var saved = localStorage.getItem('lt-theme');
+        if (saved === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        } else if (!saved && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+    } catch (e) {}
+})();
+</script>
+
 <!-- Fonts: Poppins (UI) + Fraunces (wordmark), matching the landing page -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -40,6 +60,10 @@ require_once __DIR__ . '/icons.php';
 <?php if (($activePage ?? '') === 'analysis'): ?>
 <link rel="stylesheet" href="assets/css/analysis.css">
 <?php endif; ?>
+
+<!-- Dark mode engine: applies/persists theme, syncs tabs, wires up the
+     Light/Dark radios on settings.php. Loaded on every page. -->
+<script src="assets/js/theme.js" defer></script>
 </head>
 <body>
 
