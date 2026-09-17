@@ -4,12 +4,14 @@
    responsive behavior for tablet/mobile.
 
    UPDATE: every surface that used to be flat white/opaque (#fff,
-   var(--color-surface)) is now translucent glass. Colors are set with
-   plain rgba(255,255,255,alpha) rather than the themed --glass-bg /
-   --glass-border tokens, so the sidebar, topbar, search input, icon
-   buttons, profile pill and dropdown read as pure white glass and
-   never pick up the page's cream tint. Panels stay flush against the
-   screen edges (no floating margin) — only the transparency changed.
+   var(--color-surface)) is translucent glass, using the --panel-glass-*
+   tokens from variables.css. Those tokens are plain white in light mode
+   (so the sidebar, topbar, search input, icon buttons, profile pill and
+   dropdown still read as pure white glass and never pick up the page's
+   cream tint) and flip to a dark translucent surface automatically when
+   [data-theme="dark"] is set on <html>. Panels stay flush against the
+   screen edges (no floating margin) — only the transparency/theming
+   mechanism changed.
    ========================================================================== */
 
 /* ---- Reset & base ---- */
@@ -53,10 +55,10 @@ html:not(.sidebar-ready) .main-content {
     padding: 1.75rem 1.25rem;
     display: flex;
     flex-direction: column;
-    /* Pure white glass — rgba(255,255,255,..) directly, not the themed
-       --glass-bg token, so it never picks up the page's cream tint. */
-    background: rgba(255, 255, 255, 0.9);
-    border-right: 1px solid rgba(255, 255, 255, 0.92);
+    /* Panel glass — flips light/dark via the --panel-glass-* tokens
+       instead of a hardcoded rgba(255,255,255,..) value. */
+    background: var(--panel-glass-bg);
+    border-right: 1px solid var(--panel-glass-border);
     backdrop-filter: blur(22px) saturate(180%);
     -webkit-backdrop-filter: blur(22px) saturate(180%);
     box-shadow: var(--shadow-md);
@@ -189,8 +191,8 @@ html:not(.sidebar-ready) .main-content {
     margin-top: 1.25rem;
     padding: 1.1rem 1.1rem 1.25rem;
     border-radius: var(--radius-lg);
-    background: rgba(255, 255, 255, 0.85);
-    border: 1px solid rgba(255, 255, 255, 0.85);
+    background: var(--panel-glass-bg-soft);
+    border: 1px solid var(--panel-glass-bg-soft);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     position: relative;
@@ -203,7 +205,7 @@ html:not(.sidebar-ready) .main-content {
     width: 30px;
     height: 30px;
     border-radius: var(--radius-full);
-    background: rgba(255, 255, 255, 0.9);
+    background: var(--panel-glass-bg);
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
     color: var(--color-primary);
@@ -241,10 +243,10 @@ html:not(.sidebar-ready) .main-content {
     align-items: center;
     gap: 1.25rem;
     padding: 1.25rem clamp(1.25rem, 3vw, 2.5rem);
-    background: rgba(255, 255, 255, 0.9);
+    background: var(--panel-glass-bg);
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.92);
+    border-bottom: 1px solid var(--panel-glass-border);
     border-radius: 0;
     box-shadow: none;
     position: sticky;
@@ -265,7 +267,7 @@ html:not(.sidebar-ready) .main-content {
     top: 0.85rem;
     max-width: 460px;
     padding: 0.55rem 0.6rem 0.55rem 1.1rem;
-    background: rgba(255, 255, 255, 0.96);
+    background: var(--panel-glass-bg-strong);
     border-color: transparent;
     border-radius: var(--radius-full);
     box-shadow: var(--glass-shadow-hover);
@@ -308,8 +310,8 @@ html:not(.sidebar-ready) .main-content {
     width: 100%;
     padding: 0.65rem 1rem 0.65rem 2.6rem;
     border-radius: var(--radius-full);
-    border: 1px solid rgba(255, 255, 255, 0.92);
-    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid var(--panel-glass-border);
+    background: var(--panel-glass-bg);
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
     font-size: 0.85rem;
@@ -321,7 +323,7 @@ html:not(.sidebar-ready) .main-content {
     outline: none;
     border-color: var(--color-primary);
     box-shadow: 0 0 0 3px rgba(111, 142, 82, 0.15);
-    background: rgba(255, 255, 255, 0.96);
+    background: var(--panel-glass-bg-strong);
 }
 
 .topbar-actions { display: flex; align-items: center; gap: 0.6rem; position: relative; flex-shrink: 0; }
@@ -335,16 +337,16 @@ html:not(.sidebar-ready) .main-content {
     height: 42px;
     border-radius: var(--radius-full);
     color: var(--color-text-soft);
-    background: rgba(255, 255, 255, 0.9);
-    border: 1px solid rgba(255, 255, 255, 0.92);
+    background: var(--panel-glass-bg);
+    border: 1px solid var(--panel-glass-border);
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
     transition: all var(--transition-base);
 }
 .icon-btn:hover {
     color: var(--color-primary);
-    border-color: rgba(255, 255, 255, 0.98);
-    background: rgba(255, 255, 255, 0.96);
+    border-color: var(--panel-glass-border-strong);
+    background: var(--panel-glass-bg-strong);
     transform: translateY(-1px);
 }
 
@@ -365,13 +367,13 @@ html:not(.sidebar-ready) .main-content {
     gap: 0.55rem;
     padding: 0.35rem 0.75rem 0.35rem 0.35rem;
     border-radius: var(--radius-full);
-    border: 1px solid rgba(255, 255, 255, 0.92);
-    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid var(--panel-glass-border);
+    background: var(--panel-glass-bg);
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
     transition: all var(--transition-base);
 }
-.topbar-profile:hover { border-color: rgba(255, 255, 255, 0.98); background: rgba(255, 255, 255, 0.96); }
+.topbar-profile:hover { border-color: var(--panel-glass-border-strong); background: var(--panel-glass-bg-strong); }
 .topbar-profile-name { font-size: 0.85rem; font-weight: 600; }
 .topbar-profile-chevron { color: var(--color-text-faint); transition: transform var(--transition-base); }
 .topbar-profile[aria-expanded="true"] .topbar-profile-chevron { transform: rotate(180deg); }
@@ -381,10 +383,10 @@ html:not(.sidebar-ready) .main-content {
     top: calc(100% + 0.6rem);
     right: 0;
     min-width: 190px;
-    background: rgba(255, 255, 255, 0.9);
+    background: var(--panel-glass-bg);
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid rgba(255, 255, 255, 0.92);
+    border: 1px solid var(--panel-glass-border);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-md);
     padding: 0.5rem;
@@ -411,7 +413,7 @@ html:not(.sidebar-ready) .main-content {
 }
 .profile-dropdown a:hover { background: rgba(111, 142, 82, 0.08); color: var(--color-primary); }
 .profile-dropdown a.text-danger:hover { background: var(--color-danger-bg); color: var(--color-danger); }
-.profile-dropdown hr { border: none; border-top: 1px solid rgba(255, 255, 255, 0.92); margin: 0.3rem 0; }
+.profile-dropdown hr { border: none; border-top: 1px solid var(--panel-glass-border); margin: 0.3rem 0; }
 
 /* ---- Sidebar backdrop (mobile only) ---- */
 .sidebar-backdrop {
@@ -494,7 +496,7 @@ html:not(.sidebar-ready) .main-content {
         gap: 0;
         padding: 0.4rem 0.5rem calc(0.4rem + env(safe-area-inset-bottom));
         border-right: none;
-        border-top: 1px solid rgba(255, 255, 255, 0.92);
+        border-top: 1px solid var(--panel-glass-border);
         border-radius: 0;
         box-shadow: 0 -8px 24px -18px rgba(38, 48, 31, 0.18);
         transform: none;
