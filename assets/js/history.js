@@ -9,6 +9,8 @@
  *     inlined by history.php — no extra network round-trip needed)
  *  5) Delete row (dummy front-end removal only, no backend call yet)
  *  6) Empty state toggle + a lightweight dummy pagination control
+ *  7) NEW: Bookmark/save row -> calls toggle_save.php so it shows up
+ *     on saved.php
  *
  * Depends on nothing outside the DOM; dashboard.js (loaded globally by
  * includes/footer.php) is untouched and unaffected by this file.
@@ -182,6 +184,12 @@
             var deleteBtn = event.target.closest('.history-delete-btn');
             if (deleteBtn) {
                 handleDelete(deleteBtn);
+                return;
+            }
+
+            var saveBtn = event.target.closest('.history-save-btn');
+            if (saveBtn) {
+                handleToggleSave(saveBtn);
             }
         });
     }
@@ -209,6 +217,44 @@
             row.remove();
             applySearchAndFilter();
         }, 200);
+    }
+
+    /* ---- 7) Bookmark / save toggle — talks to toggle_save.php ---- */
+    function handleToggleSave(button) {
+        if (button.disabled) return;
+
+        var id = button.dataset.id;
+        var isCurrentlySaved = button.dataset.saved === '1';
+        var action = isCurrentlySaved ? 'unsave' : 'save';
+
+        button.disabled = true;
+
+        fetch('toggle_save.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ analysis_id: id, action: action }),
+        })
+            .then(function (res) {
+                return res.json().then(function (data) { return { ok: res.ok, data: data }; });
+            })
+            .then(function (result) {
+                if (!result.ok || !result.data.success) {
+                    throw new Error(result.data.message || 'Gagal menyimpan.');
+                }
+
+                var nowSaved = !!result.data.is_saved;
+                button.dataset.saved = nowSaved ? '1' : '0';
+                button.classList.toggle('is-saved', nowSaved);
+                button.setAttribute('aria-label', nowSaved ? 'Hapus dari saved' : 'Simpan ke favorit');
+                button.title = nowSaved ? 'Tersimpan di Saved Results' : 'Simpan ke favorit';
+            })
+            .catch(function (err) {
+                console.error('TOGGLE SAVE ERROR:', err);
+                alert(err.message || 'Gagal menyimpan. Coba lagi.');
+            })
+            .finally(function () {
+                button.disabled = false;
+            });
     }
 
     /* ---- 6) Dummy pagination (visual only — data is not paginated yet) ---- */

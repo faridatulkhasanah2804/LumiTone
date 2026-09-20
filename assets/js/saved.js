@@ -7,7 +7,8 @@
  *  3) Sort by date (Newest / Oldest)
  *  4) Detail modal (populated from window.LT_SAVED_DATA, which is
  *     inlined by saved.php — no extra network round-trip needed)
- *  5) Unsave card (dummy front-end removal only, no backend call yet)
+ *  5) Unsave card — NOW calls toggle_save.php so the row is actually
+ *     un-favorited in the database, not just removed from the DOM
  *  6) Empty state toggle + a lightweight dummy pagination control
  *
  * Depends on nothing outside the DOM; dashboard.js (loaded globally by
@@ -194,19 +195,43 @@
         if (event.key === 'Escape') closeModal();
     });
 
-    /* ---- 5) Unsave card (front-end only for now — no backend call yet) ---- */
+    /* ---- 5) Unsave card — now calls toggle_save.php for real ---- */
     function handleUnsave(button) {
+        if (button.disabled) return;
+
         var card = button.closest('.saved-card');
         if (!card) return;
 
         var confirmed = window.confirm('Hapus hasil ini dari Saved Results?');
         if (!confirmed) return;
 
-        card.classList.add('is-removing');
-        window.setTimeout(function () {
-            card.remove();
-            applySearchAndFilter();
-        }, 200);
+        var id = card.dataset.id;
+        button.disabled = true;
+
+        fetch('toggle_save.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ analysis_id: id, action: 'unsave' }),
+        })
+            .then(function (res) {
+                return res.json().then(function (data) { return { ok: res.ok, data: data }; });
+            })
+            .then(function (result) {
+                if (!result.ok || !result.data.success) {
+                    throw new Error(result.data.message || 'Gagal menghapus dari saved.');
+                }
+
+                card.classList.add('is-removing');
+                window.setTimeout(function () {
+                    card.remove();
+                    applySearchAndFilter();
+                }, 200);
+            })
+            .catch(function (err) {
+                console.error('UNSAVE ERROR:', err);
+                alert(err.message || 'Gagal menghapus dari saved. Coba lagi.');
+                button.disabled = false;
+            });
     }
 
     /* ---- 6) Dummy pagination (visual only — data is not paginated yet) ---- */
