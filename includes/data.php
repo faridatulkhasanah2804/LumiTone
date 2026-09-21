@@ -8,10 +8,14 @@
  * to live here as dummy arrays — they're page-specific, so they now
  * live in dashboard.php as real queries instead.
  *
- * $quickActions / $dailyTip / $activities / $settings are left as
- * static/dummy for now since they aren't backed by a table in the
- * current schema and weren't part of the pages reviewed for this
- * refactor.
+ * $quickActions / $dailyTip / $activities are left as static/dummy
+ * for now since they aren't backed by a table in the current schema.
+ *
+ * $settings now comes from the `settings` table (see
+ * sql/001_create_settings_table.sql + includes/settings_actions.php).
+ * A default row is created on first save, so until the user changes
+ * anything this simply falls back to the same defaults the old dummy
+ * array used.
  * ------------------------------------------------------------------
  */
 
@@ -36,6 +40,33 @@ $currentUser = [
     'photo'     => null,
 ];
 
+// Settings page defaults — used as a fallback until a `settings`
+// row exists for this user, and as the shape the templates expect.
+$settings = [
+    'appearance' => [
+        'theme'    => 'Light Mode',
+        'accent'   => 'Blue',
+        'fontSize' => 'Medium',
+    ],
+    'notification' => [
+        'email'     => true,
+        'analysis'  => true,
+        'product'   => true,
+        'promotion' => false,
+    ],
+    'privacy' => [
+        'profile'     => 'Private',
+        'dataSharing' => false,
+        'twoFactor'   => true,
+    ],
+    'language' => [
+        'current'    => 'English',
+        'timezone'   => 'GMT+7 (WIB)',
+        'dateFormat' => 'DD/MM/YYYY',
+        'currency'   => 'IDR (Rp)',
+    ],
+];
+
 if (isset($_SESSION['user_id'])) {
     $stmt = mysqli_prepare($conn, 'SELECT fullname, email, photo FROM users WHERE id = ? LIMIT 1');
     mysqli_stmt_bind_param($stmt, 'i', $_SESSION['user_id']);
@@ -56,6 +87,44 @@ if (isset($_SESSION['user_id'])) {
             'initials'  => $initials,
             'plan'      => 'LumiTone Pro',
             'photo'     => $user['photo'],
+        ];
+    }
+
+    // Load real settings from the `settings` table, if a row exists yet.
+    // (It's created lazily the first time the user changes something —
+    // see includes/settings_actions.php — so a missing row here just
+    // means "still on defaults", not an error.)
+    $stmt = mysqli_prepare($conn, 'SELECT * FROM settings WHERE user_id = ? LIMIT 1');
+    mysqli_stmt_bind_param($stmt, 'i', $_SESSION['user_id']);
+    mysqli_stmt_execute($stmt);
+    $result   = mysqli_stmt_get_result($stmt);
+    $userSettings = $result ? mysqli_fetch_assoc($result) : null;
+    mysqli_stmt_close($stmt);
+
+    if ($userSettings) {
+        $settings = [
+            'appearance' => [
+                'theme'    => $userSettings['theme'],
+                'accent'   => $userSettings['accent'],
+                'fontSize' => $userSettings['font_size'],
+            ],
+            'notification' => [
+                'email'     => (bool) $userSettings['notif_email'],
+                'analysis'  => (bool) $userSettings['notif_analysis'],
+                'product'   => (bool) $userSettings['notif_product'],
+                'promotion' => (bool) $userSettings['notif_promotion'],
+            ],
+            'privacy' => [
+                'profile'     => $userSettings['privacy_profile'],
+                'dataSharing' => (bool) $userSettings['privacy_data_sharing'],
+                'twoFactor'   => (bool) $userSettings['privacy_two_factor'],
+            ],
+            'language' => [
+                'current'    => $userSettings['language_current'],
+                'timezone'   => $userSettings['language_timezone'],
+                'dateFormat' => $userSettings['language_date_format'],
+                'currency'   => $userSettings['language_currency'],
+            ],
         ];
     }
 }
@@ -110,28 +179,5 @@ $activities = [
         'icon'  => 'sparkles',
         'title' => 'Rekomendasi produk baru dibuat',
         'time'  => 'Baru saja',
-    ],
-];
-
-// Settings page defaults (static — no `settings` table in the current schema)
-$settings = [
-    'appearance' => [
-        'theme'    => 'Light Mode',
-        'accent'   => 'Blue',
-        'fontSize' => 'Medium',
-    ],
-    'notification' => [
-        'email'     => true,
-        'analysis'  => true,
-        'product'   => true,
-        'promotion' => false,
-    ],
-    'privacy' => [
-        'profile'      => 'Private',
-        'dataSharing'  => false,
-        'twoFactor'    => true,
-    ],
-    'language' => [
-        'current' => 'English',
     ],
 ];
