@@ -70,6 +70,18 @@
         inset 0 1px 0 rgba(255, 255, 255, 0.75),
         inset 0 -1px 0 rgba(255, 255, 255, 0.2);
 
+    /* Panel glass — used specifically by the sidebar, topbar, search
+       input, icon buttons, profile pill, and profile dropdown. Kept
+       separate from --glass-bg so those panels can stay "pure white"
+       glass in light mode (never picking up the page's cream tint,
+       per layout.css's own design intent) while still flipping to a
+       dark, translucent surface correctly in dark mode. */
+    --panel-glass-bg: rgba(255, 255, 255, 0.9);
+    --panel-glass-bg-soft: rgba(255, 255, 255, 0.85);
+    --panel-glass-bg-strong: rgba(255, 255, 255, 0.96);
+    --panel-glass-border: rgba(255, 255, 255, 0.92);
+    --panel-glass-border-strong: rgba(255, 255, 255, 0.98);
+
     /* Layout */
     --sidebar-width: 264px;
     --sidebar-width-min: 200px;
@@ -138,4 +150,13 @@
         0 20px 48px rgba(0, 0, 0, 0.45),
         inset 0 1px 0 rgba(255, 255, 255, 0.08),
         inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+
+    /* Panel glass flips to a dark, translucent surface so the sidebar,
+       topbar, search bar, icon buttons, profile pill, and dropdown all
+       read as dark glass instead of staying bright white. */
+    --panel-glass-bg: rgba(25, 31, 19, 0.85);
+    --panel-glass-bg-soft: rgba(25, 31, 19, 0.75);
+    --panel-glass-bg-strong: rgba(25, 31, 19, 0.92);
+    --panel-glass-border: rgba(255, 255, 255, 0.08);
+    --panel-glass-border-strong: rgba(255, 255, 255, 0.14);
 }

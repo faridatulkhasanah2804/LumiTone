@@ -1,72 +1,102 @@
 /**
  * theme.js
  * ------------------------------------------------------------------
- * Dark mode for LumiTone. Toggling is driven by data-theme="dark"|"light"
- * on <html>, which flips every color token in variables.css (see the
- * "Dark Mode" block at the bottom of that file).
+ * Light / Dark mode for the whole LumiTone dashboard.
+ * Pairs with the `[data-theme="dark"]` tokens in assets/css/variables.css.
  *
- * Two responsibilities:
- *   1. Apply the saved theme as early as possible (see note below) so
- *      there's no light-mode flash before the page paints.
- *   2. Keep the Theme radio pills on settings.php (name="theme",
- *      values "Light Mode" / "Dark Mode") in sync with it.
- *
- * IMPORTANT — avoiding flash of light mode:
- * Loading this whole file with a normal <script src="..."> at the
- * bottom of <body> (like dashboard.php/settings.php do with their
- * page scripts) still lets the page paint light-mode colors for a
- * split second first. To prevent that, copy just the IIFE below
- * ("1. Apply saved theme") into an inline <script> at the very top
- * of <head> in includes/header.php, before any <link rel="stylesheet">
- * tags. Keep this full file too (loaded normally) — it's what wires
- * up the Settings toggle in step 2.
+ * - Loaded on every page via includes/header.php, so dark mode works
+ *   the same way on dashboard.php, history.php, products.php,
+ *   saved.php, profile.php, settings.php, etc.
+ * - A tiny inline snippet at the very top of <head> (see header.php)
+ *   applies the saved theme before first paint, so there's no flash
+ *   of the wrong theme.
+ * - Exposes window.LumiTheme.set('light' | 'dark') so any page/button
+ *   can change the theme programmatically (e.g. a quick toggle in
+ *   the topbar later on).
+ * - Automatically wires up any `input[name="theme"]` radios it finds
+ *   on the page (currently only settings.php has them).
+ * - Keeps every open tab/page in sync via the "storage" event, so
+ *   switching theme in one tab updates the others immediately.
  * ------------------------------------------------------------------
  */
+(function () {
+    'use strict';
 
-(function applySavedTheme() {
-    var STORAGE_KEY = 'lt-theme';
-    var saved = null;
-    try {
-        saved = localStorage.getItem(STORAGE_KEY);
-    } catch (e) {
-        /* localStorage unavailable (private mode, etc.) — fall back to light */
+    var STORAGE_KEY = 'lt-theme'; // same key settings.js used for its old local-only toggle
+
+    function getStoredTheme() {
+        try {
+            return localStorage.getItem(STORAGE_KEY);
+        } catch (e) {
+            return null;
+        }
     }
-    var theme = saved === 'dark' ? 'dark' : 'light';
-    document.documentElement.setAttribute('data-theme', theme);
-})();
 
-/* ------------------------------------------------------------------
- * 2. Sync with the Settings page toggle + expose a helper for any
- *    other toggle (e.g. a future sun/moon button in the topbar).
- * ------------------------------------------------------------------ */
-window.ltSetTheme = function ltSetTheme(theme) {
-    theme = theme === 'dark' ? 'dark' : 'light';
-    document.documentElement.setAttribute('data-theme', theme);
-    try {
-        localStorage.setItem('lt-theme', theme);
-    } catch (e) {
-        /* ignore — theme just won't persist across reloads */
+    function applyTheme(theme) {
+        if (theme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        } else {
+            document.documentElement.removeAttribute('data-theme');
+        }
     }
-};
 
-window.ltToggleTheme = function ltToggleTheme() {
-    var current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
-    ltSetTheme(current === 'dark' ? 'light' : 'dark');
-};
+    function currentTheme() {
+        return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+    }
 
-document.addEventListener('DOMContentLoaded', function () {
-    /* Make sure the settings.php radio pills reflect the theme actually
-       in effect (covers e.g. a saved DB preference disagreeing with
-       localStorage on first load). */
-    var current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
-    var themeRadios = document.querySelectorAll('input[name="theme"]');
-    themeRadios.forEach(function (radio) {
-        var isDarkOption = radio.value === 'Dark Mode';
-        radio.checked = isDarkOption ? current === 'dark' : current === 'light';
-
-        radio.addEventListener('change', function () {
-            if (!radio.checked) return;
-            ltSetTheme(radio.value === 'Dark Mode' ? 'dark' : 'light');
+    function syncThemeInputs(theme) {
+        var wantedValue = theme === 'dark' ? 'Dark Mode' : 'Light Mode';
+        document.querySelectorAll('input[name="theme"]').forEach(function (input) {
+            input.checked = (input.value === wantedValue);
         });
+    }
+
+    function setTheme(theme, opts) {
+        opts = opts || {};
+        theme = theme === 'dark' ? 'dark' : 'light';
+
+        applyTheme(theme);
+
+        try {
+            localStorage.setItem(STORAGE_KEY, theme);
+        } catch (e) {
+            /* localStorage unavailable (private mode, etc.) — theme still
+               applies for this page load, it just won't persist. */
+        }
+
+        if (!opts.silent) {
+            syncThemeInputs(theme);
+        }
+
+        document.dispatchEvent(new CustomEvent('lumitheme:change', { detail: { theme: theme } }));
+    }
+
+    function initToggleUI() {
+        document.querySelectorAll('input[name="theme"]').forEach(function (input) {
+            input.addEventListener('change', function () {
+                if (!input.checked) return;
+                setTheme(input.value === 'Dark Mode' ? 'dark' : 'light', { silent: true });
+            });
+        });
+        // Make sure whichever radio matches the active theme is checked,
+        // even if the page rendered "Light Mode" as checked by default.
+        syncThemeInputs(currentTheme());
+    }
+
+    // Cross-tab sync: if the user flips the switch on another tab of the
+    // dashboard, reflect it here immediately.
+    window.addEventListener('storage', function (e) {
+        if (e.key === STORAGE_KEY && e.newValue) {
+            applyTheme(e.newValue);
+            syncThemeInputs(e.newValue);
+        }
     });
-});
+
+    document.addEventListener('DOMContentLoaded', initToggleUI);
+
+    window.LumiTheme = {
+        set: setTheme,
+        get: currentTheme,
+        STORAGE_KEY: STORAGE_KEY
+    };
+})();

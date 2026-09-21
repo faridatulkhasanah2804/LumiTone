@@ -14,6 +14,12 @@ if (!isset($_SESSION['user_id'])) {
  * pagination. $historyData is now built from `analysis` +
  * `recommendations` + `analysis_products` for the logged-in user.
  *
+ * CHANGE LOG (save-to-favorites fix):
+ *  - Query now selects `is_saved` so each row knows whether it's
+ *    already bookmarked.
+ *  - Added a bookmark button (history-save-btn) next to View Detail /
+ *    delete, wired up in history.js via toggle_save.php.
+ *
  * Follows the exact same page skeleton as dashboard.php / analysis.php:
  *   $pageTitle / $activePage -> header.php -> sidebar.php -> topbar.php
  *   -> .page-content -> footer.php
@@ -42,6 +48,8 @@ if (!function_exists('hist_icon')) {
             'chevron-left' => '<path d="M15 6l-6 6 6 6"></path>',
             'inbox'        => '<path d="M4 12.5V7.2a1.2 1.2 0 0 1 1.2-1.2h13.6A1.2 1.2 0 0 1 20 7.2v5.3"></path><path d="M4 12.5h4.4l1.2 2.3h4.8l1.2-2.3H20"></path><path d="M4 12.5v6.3A1.2 1.2 0 0 0 5.2 20h13.6a1.2 1.2 0 0 0 1.2-1.2v-6.3"></path>',
             'swatch'       => '<rect x="3.2" y="3.2" width="7.2" height="17.6" rx="2"></rect><path d="M13.5 5.6l4.4-1.9a2 2 0 0 1 2.6 1l3.2 7.4"></path>',
+            'bookmark'        => '<path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>',
+            'bookmark-filled' => '<path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" fill="currentColor"></path>',
         ];
         $inner = $paths[$name] ?? $paths['inbox'];
         return sprintf(
@@ -66,7 +74,7 @@ $userId = (int) $_SESSION['user_id'];
 
 $historyData = [];
 
-$stmt = mysqli_prepare($conn, 'SELECT id, skin_tone, undertone, skin_type, concerns, status, confidence, created_at
+$stmt = mysqli_prepare($conn, 'SELECT id, skin_tone, undertone, skin_type, concerns, status, is_saved, confidence, created_at
     FROM analysis WHERE user_id = ? ORDER BY created_at DESC');
 mysqli_stmt_bind_param($stmt, 'i', $userId);
 mysqli_stmt_execute($stmt);
@@ -112,6 +120,7 @@ foreach ($analysisRows as $row) {
         'skintype'   => $row['skin_type'] ?? '—',
         'concern'    => $mainConcern,
         'status'     => $row['status'] === 'completed' ? 'Selesai' : 'Diproses',
+        'is_saved'   => (int) $row['is_saved'] === 1,
         'confidence' => (int) $row['confidence'],
         'colors'     => $colors,
         'products'   => $products,
@@ -221,6 +230,14 @@ mysqli_stmt_close($productStmt);
                                 </td>
                                 <td>
                                     <div class="history-actions">
+                                        <button type="button"
+                                                class="btn btn-ghost btn-sm history-save-btn<?= $row['is_saved'] ? ' is-saved' : '' ?>"
+                                                data-id="<?= (int) $row['id'] ?>"
+                                                data-saved="<?= $row['is_saved'] ? '1' : '0' ?>"
+                                                aria-label="<?= $row['is_saved'] ? 'Hapus dari saved' : 'Simpan ke favorit' ?>"
+                                                title="<?= $row['is_saved'] ? 'Tersimpan di Saved Results' : 'Simpan ke favorit' ?>">
+                                            <?= hist_icon($row['is_saved'] ? 'bookmark-filled' : 'bookmark', 15) ?>
+                                        </button>
                                         <button type="button" class="btn btn-secondary btn-sm history-view-btn" data-id="<?= (int) $row['id'] ?>">
                                             <?= lt_icon('eye', '', 15) ?> View Detail
                                         </button>

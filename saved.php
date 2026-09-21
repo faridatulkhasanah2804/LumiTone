@@ -1,12 +1,26 @@
 <?php
+session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: index.php");
+    exit();
+}
+
 /**
  * saved.php
  * ------------------------------------------------------------------
  * Saved Results page: a gallery of the user's favorited AI skin
- * analysis results (bookmarked from history.php). Includes search,
- * filter, sort, a detail modal, unsave action, empty state, and
- * pagination. Uses dummy PHP array data for now ($savedData), ready
- * to be swapped for real database queries later.
+ * analysis results (bookmarked from analysis.php / history.php).
+ * Includes search, filter, sort, a detail modal, unsave action,
+ * empty state, and pagination.
+ *
+ * CHANGE LOG (save-to-favorites fix):
+ *  - $savedData is no longer a hardcoded dummy array. It's now built
+ *    from `analysis` (WHERE user_id = ? AND is_saved = 1), joined
+ *    against `recommendations` and `analysis_products` exactly the
+ *    same way history.php does it.
+ *  - The unsave button now round-trips through toggle_save.php via
+ *    saved.js instead of just removing the card from the DOM.
  *
  * Follows the exact same page skeleton as dashboard.php / history.php
  * / products.php:
@@ -52,59 +66,76 @@ if (!function_exists('saved_icon')) {
 
 /**
  * ------------------------------------------------------------------
- * DUMMY DATA — analysis results the user has bookmarked as favorites
- * from history.php. Replace with a real query (e.g. SELECT * FROM
- * analyses WHERE user_id = ? AND is_saved = 1) once the database and
- * a real "save" action on history.php are wired up.
+ * $savedData — analysis results the user has bookmarked as favorites,
+ * sourced from `analysis` (is_saved = 1), joined against
+ * `recommendations` (color palette) and `analysis_products` +
+ * `products` (recommended product names) — same pattern history.php
+ * already uses.
  * ------------------------------------------------------------------
  */
-$savedData = [
-    [
-        'id'          => 1,
-        'initials'    => 'FN',
-        'date'        => '2 Jan 2024, 14:30',
-        'month'       => '2024-01',
-        'skintone'    => 'Light - Medium',
-        'swatch'      => '#E7B98F',
-        'undertone'   => 'Warm (Kuning/Emas)',
-        'skintype'    => 'Kombinasi',
-        'concern'     => 'Pori-pori besar',
-        'note'        => 'Hasil paling akurat sejauh ini, jadi patokan rutinitas.',
-        'confidence'  => 94,
-        'colors'      => ['#C98A5E', '#D9A374', '#E4B98C', '#F1D9B5'],
-        'products'    => ['Gentle Foaming Cleanser', 'Vitamin C Brightening Serum', 'Daily Matte Sunscreen SPF 50+'],
-    ],
-    [
-        'id'          => 2,
-        'initials'    => 'FN',
-        'date'        => '5 Des 2023, 16:45',
-        'month'       => '2023-12',
-        'skintone'    => 'Medium',
-        'swatch'      => '#C99169',
-        'undertone'   => 'Neutral',
-        'skintype'    => 'Normal',
-        'concern'     => 'Garis halus',
-        'note'        => 'Hasil sebelum ganti skincare, buat perbandingan nanti.',
-        'confidence'  => 88,
-        'colors'      => ['#B9825A', '#C99169', '#D9A87A'],
-        'products'    => ['Hydrating Gel Moisturizer', 'Retinol Night Serum'],
-    ],
-    [
-        'id'          => 3,
-        'initials'    => 'FN',
-        'date'        => '14 Nov 2023, 19:20',
-        'month'       => '2023-11',
-        'skintone'    => 'Deep',
-        'swatch'      => '#8C5A38',
-        'undertone'   => 'Warm (Kuning/Emas)',
-        'skintype'    => 'Berminyak',
-        'concern'     => 'Pori-pori besar',
-        'note'        => 'Kondisi kulit musim kemarau, referensi tahun depan.',
-        'confidence'  => 90,
-        'colors'      => ['#8C5A38', '#A06B45', '#B47D54'],
-        'products'    => ['Oil Control Clay Mask', 'Niacinamide Serum'],
-    ],
-];
+$userId = (int) $_SESSION['user_id'];
+
+$savedData = [];
+
+$stmt = mysqli_prepare($conn, 'SELECT id, skin_tone, undertone, skin_type, concerns, status, confidence, created_at
+    FROM analysis WHERE user_id = ? AND is_saved = 1 ORDER BY created_at DESC');
+mysqli_stmt_bind_param($stmt, 'i', $userId);
+mysqli_stmt_execute($stmt);
+$analysisResult = mysqli_stmt_get_result($stmt);
+$analysisRows   = mysqli_fetch_all($analysisResult, MYSQLI_ASSOC);
+mysqli_stmt_close($stmt);
+
+$colorStmt   = mysqli_prepare($conn, 'SELECT clothing FROM recommendations WHERE analysis_id = ? LIMIT 1');
+$productStmt = mysqli_prepare($conn, 'SELECT p.product_name FROM analysis_products ap
+    INNER JOIN products p ON p.id = ap.product_id WHERE ap.analysis_id = ?');
+
+foreach ($analysisRows as $row) {
+    $concerns    = lt_json_list($row['concerns']);
+    $mainConcern = $concerns[0]['label'] ?? ($row['status'] === 'processing' ? 'Sedang diproses' : '—');
+
+    $colors = [];
+    mysqli_stmt_bind_param($colorStmt, 'i', $row['id']);
+    mysqli_stmt_execute($colorStmt);
+    if ($rec = mysqli_fetch_assoc(mysqli_stmt_get_result($colorStmt))) {
+        foreach (lt_json_list($rec['clothing']) as $c) {
+            $colors[] = is_array($c) ? ($c['hex'] ?? '') : $c;
+        }
+        $colors = array_filter($colors);
+    }
+
+    $products = [];
+    mysqli_stmt_bind_param($productStmt, 'i', $row['id']);
+    mysqli_stmt_execute($productStmt);
+    $prodRows = mysqli_stmt_get_result($productStmt);
+    while ($p = mysqli_fetch_assoc($prodRows)) {
+        $products[] = $p['product_name'];
+    }
+
+    $confidence = (int) $row['confidence'];
+
+    $savedData[] = [
+        'id'          => $row['id'],
+        'initials'    => $currentUser['initials'],
+        'date'        => date('j M Y, H:i', strtotime($row['created_at'])),
+        'month'       => date('Y-m', strtotime($row['created_at'])),
+        'skintone'    => $row['skin_tone'] ?? '—',
+        'swatch'      => lt_skintone_to_hex($row['skin_tone']),
+        'undertone'   => $row['undertone'] ?? '—',
+        'skintype'    => $row['skin_type'] ?? '—',
+        'concern'     => $mainConcern,
+        // `analysis` has no free-text "note" column yet, so we show a
+        // small, genuinely-derived summary instead of inventing text.
+        'note'        => $confidence
+            ? 'Confidence score analisis ini: ' . $confidence . '%.'
+            : 'Ditandai sebagai hasil favorit.',
+        'confidence'  => $confidence,
+        'colors'      => $colors,
+        'products'    => $products,
+    ];
+}
+
+mysqli_stmt_close($colorStmt);
+mysqli_stmt_close($productStmt);
 ?>
 <main class="main-content">
 
@@ -210,7 +241,7 @@ $savedData = [
             <!-- ==================================================
                  EMPTY STATE (hidden unless the grid has 0 visible cards)
             =================================================== -->
-            <div class="saved-empty is-hidden" id="savedEmpty">
+            <div class="saved-empty<?= empty($savedData) ? '' : ' is-hidden' ?>" id="savedEmpty">
                 <div class="saved-empty-icon"><?= saved_icon('inbox', 30) ?></div>
                 <p class="saved-empty-title">No saved results yet</p>
                 <p class="saved-empty-desc">Tandai hasil analisis favoritmu dari halaman Analysis History.</p>
@@ -297,8 +328,9 @@ $savedData = [
     </div>
 
     <script>
-        /* Dummy saved-results data passed to saved.js to power the
-           detail modal without a second round-trip / database call. */
+        /* Saved-results data (now sourced from the database) passed to
+           saved.js to power the detail modal without a second
+           round-trip / database call. */
         window.LT_SAVED_DATA = <?= json_encode($savedData, JSON_UNESCAPED_UNICODE) ?>;
     </script>
     <script src="assets/js/saved.js"></script>

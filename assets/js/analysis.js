@@ -3,10 +3,18 @@
  * Interaksi halaman AI Analysis: tab upload/kamera, ambil foto,
  * kirim ke backend (analyze_image.php) yang memanggil Gemini Vision,
  * lalu render hasil asli ke #resultState.
+ *
+ * CHANGE LOG (save-to-favorites fix):
+ *  - currentAnalysisId disimpan dari data.analysis_id setiap kali
+ *    analyze_image.php sukses, supaya tombol "Simpan Hasil" tahu
+ *    baris `analysis` mana yang mau ditandai favorit.
+ *  - #saveResultBtn sekarang benar-benar memanggil toggle_save.php
+ *    (bukan cuma mengubah teks tombol).
  */
 document.addEventListener('DOMContentLoaded', function () {
     let cameraStream = null;
     let currentImageDataUrl = null;
+    let currentAnalysisId = null; // <-- NEW: id baris `analysis` hasil terakhir
 
     const dropzone         = document.getElementById('dropzone');
     const cameraBox         = document.getElementById('cameraBox');
@@ -35,6 +43,7 @@ document.addEventListener('DOMContentLoaded', function () {
     console.log('[analysis.js] loaded OK. cameraBox found:', !!cameraBox);
 
     const steps = ['Mendeteksi warna kulit', 'Mengenali jenis kulit', 'Menganalisis area concern', 'Menyusun rekomendasi'];
+    const SAVE_LABEL_DEFAULT = saveResultBtn ? saveResultBtn.innerHTML : '';
 
     // ---------------- TAB SWITCH (Upload vs Kamera) ----------------
     tabs.forEach(tab => {
@@ -203,6 +212,10 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
+    // NEW: ingat id analysis yang baru dibuat, dibutuhkan tombol "Simpan Hasil"
+    currentAnalysisId = data.analysis_id || null;
+    resetSaveButton();
+
     resultThumb.src = currentImageDataUrl;
     renderResult(data.result);
     resultState.classList.remove('is-hidden');
@@ -300,17 +313,55 @@ document.addEventListener('DOMContentLoaded', function () {
     // ---------------- RESET / SAVE ----------------
     newAnalysisBtn.addEventListener('click', () => {
         currentImageDataUrl = null;
+        currentAnalysisId = null; // NEW: lupakan id analisis sebelumnya
         resultState.classList.add('is-hidden');
         uploadState.classList.remove('is-hidden');
         tipsCard.classList.remove('is-hidden');
         removePreviewBtn.click();
         analyzingStep.textContent = steps[0];
         analyzeBtn.disabled = true;
+        resetSaveButton();
     });
 
-    saveResultBtn.addEventListener('click', () => {
-        // Hasil sudah otomatis tersimpan ke database saat analisis selesai (lihat analyze_image.php).
-        saveResultBtn.textContent = 'Tersimpan';
-        saveResultBtn.disabled = true;
-    });
+    function resetSaveButton() {
+        if (!saveResultBtn) return;
+        saveResultBtn.disabled = false;
+        saveResultBtn.classList.remove('is-saved');
+        saveResultBtn.innerHTML = SAVE_LABEL_DEFAULT;
+    }
+
+    // NEW: tombol "Simpan Hasil" sekarang beneran memanggil backend.
+    if (saveResultBtn) {
+        saveResultBtn.addEventListener('click', () => {
+            if (!currentAnalysisId) {
+                alert('Hasil analisis belum siap disimpan. Coba lagi sebentar.');
+                return;
+            }
+
+            saveResultBtn.disabled = true;
+            const originalHtml = saveResultBtn.innerHTML;
+            saveResultBtn.textContent = 'Menyimpan...';
+
+            fetch('toggle_save.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ analysis_id: currentAnalysisId, action: 'save' }),
+            })
+                .then(res => res.json().then(data => ({ ok: res.ok, data })))
+                .then(({ ok, data }) => {
+                    if (!ok || !data.success) {
+                        throw new Error(data.message || 'Gagal menyimpan hasil.');
+                    }
+                    saveResultBtn.textContent = 'Tersimpan';
+                    saveResultBtn.classList.add('is-saved');
+                    saveResultBtn.disabled = true; // sudah tersimpan, tak perlu diklik lagi
+                })
+                .catch(err => {
+                    console.error('SAVE ERROR:', err);
+                    alert(err.message || 'Gagal menyimpan hasil. Coba lagi.');
+                    saveResultBtn.innerHTML = originalHtml;
+                    saveResultBtn.disabled = false;
+                });
+        });
+    }
 });
