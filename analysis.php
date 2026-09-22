@@ -159,9 +159,6 @@ if (!function_exists('ai_icon')) {
                         <button type="button" class="btn btn-outline btn-sm" id="saveResultBtn">
                             <?= ai_icon('bookmark', 15) ?> Simpan Hasil
                         </button>
-                        <a href="products.php" class="btn btn-primary btn-sm">
-                            <?= ai_icon('package', 15) ?> Lihat Rekomendasi Produk
-                        </a>
                     </div>
                 </div>
             </div>
