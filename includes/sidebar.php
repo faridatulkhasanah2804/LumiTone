@@ -37,14 +37,6 @@
         </ul>
     </nav>
 
-    <!-- Upgrade to Pro promo card -->
-    <div class="sidebar-promo">
-        <span class="sidebar-promo-badge"><?= lt_icon('sparkles', '', 16) ?></span>
-        <p class="sidebar-promo-title">Upgrade ke LumiTone Pro</p>
-        <p class="sidebar-promo-desc">Analisis lebih detail &amp; riwayat tak terbatas.</p>
-        <a href="#" class="btn btn-primary btn-sm btn-block">Upgrade Sekarang</a>
-    </div>
-
     <!-- Logout -->
     <div class="sidebar-footer">
         <a href="logout.php" class="nav-link nav-link-logout">

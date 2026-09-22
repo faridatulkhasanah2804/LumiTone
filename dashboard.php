@@ -44,18 +44,6 @@ mysqli_stmt_execute($stmt);
 $latestAnalysis = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
 mysqli_stmt_close($stmt);
 
-/* ---------------------------------------------------------------
- * Distinct products recommended across all of this user's analyses
- * --------------------------------------------------------------- */
-$stmt = mysqli_prepare($conn, 'SELECT COUNT(DISTINCT ap.product_id) AS total
-    FROM analysis_products ap
-    INNER JOIN analysis a ON a.id = ap.analysis_id
-    WHERE a.user_id = ?');
-mysqli_stmt_bind_param($stmt, 'i', $userId);
-mysqli_stmt_execute($stmt);
-$totalProductsRecommended = (int) mysqli_fetch_assoc(mysqli_stmt_get_result($stmt))['total'];
-mysqli_stmt_close($stmt);
-
 $stats = [
     [
         'icon'  => 'scan-face',
@@ -68,18 +56,6 @@ $stats = [
         'label' => 'Detected Skin Tone',
         'value' => $latestAnalysis['season'] ?? 'Belum ada data',
         'meta'  => 'Hasil terakhir',
-    ],
-    [
-        'icon'  => 'package',
-        'label' => 'Recommended Products',
-        'value' => (string) $totalProductsRecommended,
-        'meta'  => 'Produk untukmu',
-    ],
-    [
-        'icon'  => 'calendar',
-        'label' => 'Last Analysis',
-        'value' => $latestAnalysis ? date('j M Y', strtotime($latestAnalysis['created_at'])) : '—',
-        'meta'  => $latestAnalysis ? lt_time_ago($latestAnalysis['created_at']) : 'Belum ada analisis',
     ],
 ];
 
@@ -104,31 +80,6 @@ while ($row = mysqli_fetch_assoc($rows)) {
     ];
 }
 mysqli_stmt_close($stmt);
-
-/* ---------------------------------------------------------------
- * Recommended products (from the latest analysis, max 3 to match
- * the original dashboard card grid)
- * --------------------------------------------------------------- */
-$products = [];
-if ($latestAnalysis) {
-    $stmt = mysqli_prepare($conn, 'SELECT p.category, p.product_name, p.description
-        FROM analysis_products ap
-        INNER JOIN products p ON p.id = ap.product_id
-        WHERE ap.analysis_id = ?
-        LIMIT 3');
-    mysqli_stmt_bind_param($stmt, 'i', $latestAnalysis['id']);
-    mysqli_stmt_execute($stmt);
-    $rows = mysqli_stmt_get_result($stmt);
-    while ($row = mysqli_fetch_assoc($rows)) {
-        $products[] = [
-            'icon' => lt_category_to_icon($row['category']),
-            'name' => $row['product_name'],
-            'tag'  => $row['category'] ?? '—',
-            'desc' => $row['description'] ?? '',
-        ];
-    }
-    mysqli_stmt_close($stmt);
-}
 ?>
 <main class="main-content">
     <?php require __DIR__ . '/includes/topbar.php'; ?>
@@ -151,7 +102,7 @@ if ($latestAnalysis) {
                     </a>
                 </div>
                 <div class="welcome-stats">
-                    <?php foreach (array_slice($stats, 0, 3) as $stat): ?>
+                    <?php foreach ($stats as $stat): ?>
                         <div class="welcome-stat-chip">
                             <span class="welcome-stat-chip-icon"><?= lt_icon($stat['icon'], '', 16) ?></span>
                             <div>
@@ -227,10 +178,6 @@ if ($latestAnalysis) {
             </div>
         </section>
 
-        <!-- ==================================================
-             3. RECOMMENDED PRODUCTS
-        =================================================== -->
-      
     </div>
 
     <?php require __DIR__ . '/includes/footer.php'; ?>
